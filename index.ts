@@ -2,6 +2,7 @@ import { GaslessOptions } from "@avnu/gasless-sdk";
 import { Call } from "starknet";
 import { createArgentWallet } from "./src/create-wallet";
 import { ExecutePaymasterTransactionInput, executePaymasterTransaction } from "./src/send-transaction-with-paymaster";
+import type { ChipiSDKConfig, WalletData, TransactionResult } from "./src/types";
 
 export class ChipiSDK {
   private options: GaslessOptions;
@@ -10,13 +11,7 @@ export class ChipiSDK {
   private contractAddress: string;
   private contractEntryPoint: string;
 
-  constructor(config: {
-    paymasterApiKey: string;
-    rpcUrl: string;
-    argentClassHash: string;
-    contractAddress: string;
-    contractEntryPoint?: string;
-  }) {
+  constructor(config: ChipiSDKConfig) {
     this.options = {
       baseUrl: "https://paymaster.avnu.fi",
       apiKey: config.paymasterApiKey,
@@ -27,7 +22,7 @@ export class ChipiSDK {
     this.contractEntryPoint = config.contractEntryPoint || "get_counter";
   }
 
-  async createWallet(pin: string) {
+  async createWallet(pin: string): Promise<TransactionResult> {
     return createArgentWallet({
       pin,
       rpcUrl: this.rpcUrl,
@@ -38,7 +33,7 @@ export class ChipiSDK {
     });
   }
 
-  async executeTransaction(input: ExecutePaymasterTransactionInput) {
+  async executeTransaction(input: ExecutePaymasterTransactionInput): Promise<string | null> {
     return executePaymasterTransaction({
       ...input,
       rpcUrl: this.rpcUrl,
@@ -47,4 +42,10 @@ export class ChipiSDK {
   }
 }
 
-export type { ExecutePaymasterTransactionInput };
+// Export types
+export type {
+  ChipiSDKConfig,
+  WalletData,
+  TransactionResult,
+  ExecutePaymasterTransactionInput
+};
