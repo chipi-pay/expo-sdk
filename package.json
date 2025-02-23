@@ -1,6 +1,6 @@
 {
   "name": "@chipi-pay/chipi-sdk",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "description": "SDK para crear wallets y enviar transacciones usando el paymaster de AVNU",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -39,7 +39,8 @@
     "typescript": "^5.7.3"
   },
   "dependencies": {
-    "@avnu/gasless-sdk": "^0.1.7",
-    "crypto-js": "^4.2.0"
+    "@avnu/gasless-sdk": "^0.1.6",
+    "crypto-js": "^4.2.0",
+    "starknet": "^6.23.1"
   }
 }
