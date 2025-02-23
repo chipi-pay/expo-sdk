@@ -56,7 +56,7 @@ const createArgentWallet = async (params) => {
         // TODO: Guardar la wallet en dashboard
         console.log("Wallet created successfully with txHash: ", executeTransaction.transactionHash);
         console.log("Account address: ", contractAddress);
-        return { success: true, accountAddress: contractAddress, txHash: executeTransaction.transactionHash };
+        return { success: true, accountAddress: contractAddress, encryptedPrivateKey, txHash: executeTransaction.transactionHash };
     }
     catch (error) {
         console.error("Error detallado:", error);

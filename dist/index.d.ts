@@ -1,5 +1,4 @@
-import { ExecutePaymasterTransactionInput } from "./src/send-transaction-with-paymaster";
-import type { ChipiSDKConfig, WalletData, TransactionResult } from "./src/types";
+import type { ChipiSDKConfig, TransactionInput, TransactionResult, WalletData, SimpleTransactionInput } from "./src/types";
 export declare class ChipiSDK {
     private options;
     private rpcUrl;
@@ -8,6 +7,39 @@ export declare class ChipiSDK {
     private contractEntryPoint;
     constructor(config: ChipiSDKConfig);
     createWallet(pin: string): Promise<TransactionResult>;
-    executeTransaction(input: ExecutePaymasterTransactionInput): Promise<string | null>;
+    private formatAmount;
+    executeTransaction(input: SimpleTransactionInput): Promise<string | null>;
+    transfer(params: {
+        pin: string;
+        wallet: WalletData;
+        contractAddress: string;
+        recipient: string;
+        amount: string | number;
+        decimals?: number;
+    }): Promise<string | null>;
+    approve(params: {
+        pin: string;
+        wallet: WalletData;
+        contractAddress: string;
+        spender: string;
+        amount: string | number;
+        decimals?: number;
+    }): Promise<string | null>;
+    stake(params: {
+        pin: string;
+        wallet: WalletData;
+        contractAddress: string;
+        amount: string | number;
+        recipient: string;
+        decimals?: number;
+    }): Promise<string | null>;
+    withdraw(params: {
+        pin: string;
+        wallet: WalletData;
+        contractAddress: string;
+        amount: string | number;
+        decimals?: number;
+        recipient: string;
+    }): Promise<string | null>;
 }
-export type { ChipiSDKConfig, WalletData, TransactionResult, ExecutePaymasterTransactionInput };
+export type { ChipiSDKConfig, TransactionInput, TransactionResult };

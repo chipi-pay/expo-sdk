@@ -4,9 +4,10 @@ exports.executePaymasterTransaction = void 0;
 const gasless_sdk_1 = require("@avnu/gasless-sdk");
 const starknet_1 = require("starknet");
 const encryption_1 = require("./lib/encryption");
-const executePaymasterTransaction = async (input) => {
+const executePaymasterTransaction = async (params) => {
     try {
-        const { pin, wallet, calls, rpcUrl, options } = input;
+        const { pin, wallet, calls, rpcUrl, options } = params;
+        console.log("Params: ", params);
         // Fetch the encrypted private key from clerk public metadata
         const privateKeyDecrypted = (0, encryption_1.decryptPrivateKey)(wallet.encryptedPrivateKey, pin);
         if (!privateKeyDecrypted) {
