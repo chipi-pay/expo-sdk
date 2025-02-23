@@ -1,6 +1,6 @@
 
 export interface ChipiSDKConfig {
-  paymasterApiKey: string;
+  apiKey: string;
   rpcUrl: string;
   argentClassHash: string;
   contractAddress: string;

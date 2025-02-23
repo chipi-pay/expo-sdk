@@ -1,13 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ChipiSDK = void 0;
+const gasless_sdk_1 = require("@avnu/gasless-sdk");
 const create_wallet_1 = require("./src/create-wallet");
 const send_transaction_with_paymaster_1 = require("./src/send-transaction-with-paymaster");
 class ChipiSDK {
     constructor(config) {
         this.options = {
-            baseUrl: "https://paymaster.avnu.fi",
-            apiKey: config.paymasterApiKey,
+            baseUrl: gasless_sdk_1.BASE_URL,
+            apiKey: config.apiKey,
         };
         this.rpcUrl = config.rpcUrl;
         this.argentClassHash = config.argentClassHash;

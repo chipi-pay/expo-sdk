@@ -1,4 +1,4 @@
-import { GaslessOptions } from "@avnu/gasless-sdk";
+import { GaslessOptions, BASE_URL } from "@avnu/gasless-sdk";
 import { Call } from "starknet";
 import { createArgentWallet } from "./src/create-wallet";
 import { ExecutePaymasterTransactionInput, executePaymasterTransaction } from "./src/send-transaction-with-paymaster";
@@ -13,8 +13,8 @@ export class ChipiSDK {
 
   constructor(config: ChipiSDKConfig) {
     this.options = {
-      baseUrl: "https://paymaster.avnu.fi",
-      apiKey: config.paymasterApiKey,
+      baseUrl: BASE_URL,
+      apiKey: config.apiKey,
     };
     this.rpcUrl = config.rpcUrl;
     this.argentClassHash = config.argentClassHash;

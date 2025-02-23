@@ -9,5 +9,6 @@ export interface CreateWalletParams {
 }
 export declare const createArgentWallet: (params: CreateWalletParams) => Promise<{
     success: boolean;
+    accountAddress: string;
     txHash: string;
 }>;
