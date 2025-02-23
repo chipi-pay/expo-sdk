@@ -1,8 +1,7 @@
 import { GaslessOptions } from "@avnu/gasless-sdk";
-import { Call } from "starknet";
-import { createArgentWallet } from "./src/create-wallet";
-import { ExecutePaymasterTransactionInput, executePaymasterTransaction } from "./src/send-transaction-with-paymaster";
-import type { ChipiSDKConfig, WalletData, TransactionResult } from "./src/types";
+import { createArgentWallet } from "./create-wallet";
+import { ExecutePaymasterTransactionInput, executePaymasterTransaction } from "./send-transaction-with-paymaster";
+import type { ChipiSDKConfig, TransactionResult } from "./types";
 
 export class ChipiSDK {
   private options: GaslessOptions;
@@ -41,11 +40,3 @@ export class ChipiSDK {
     });
   }
 }
-
-// Export types
-export type {
-  ChipiSDKConfig,
-  WalletData,
-  TransactionResult,
-  ExecutePaymasterTransactionInput
-};

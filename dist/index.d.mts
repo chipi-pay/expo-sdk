@@ -1,7 +1,7 @@
 import { GaslessOptions } from '@avnu/gasless-sdk';
 import { Call } from 'starknet';
-import { C as ChipiSDKConfig, T as TransactionResult } from './index-DiW3OmGT.js';
-export { a as ChipiProvider, d as ChipiProviderProps, W as WalletData, u as useChipiContext, b as useCreateWallet, c as useSign } from './index-DiW3OmGT.js';
+import { C as ChipiSDKConfig, T as TransactionResult } from './index-DiW3OmGT.mjs';
+export { a as ChipiProvider, d as ChipiProviderProps, W as WalletData, u as useChipiContext, b as useCreateWallet, c as useSign } from './index-DiW3OmGT.mjs';
 import 'react/jsx-runtime';
 import '@tanstack/react-query';
 

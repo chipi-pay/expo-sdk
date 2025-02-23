@@ -7,8 +7,10 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "jsx": "react-jsx"
+
   },
-  "include": ["src", "index.ts"],
+  "include": ["src", "src/index.ts"],
   "exclude": ["node_modules", "dist"]
 } 

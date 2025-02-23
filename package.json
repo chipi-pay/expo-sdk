@@ -2,36 +2,44 @@
   "name": "@chipi-pay/chipi-sdk",
   "version": "1.0.1",
   "description": "SDK para crear wallets y enviar transacciones usando el paymaster de AVNU",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./react": {
+      "import": "./dist/react/index.mjs",
+      "require": "./dist/react/index.js",
+      "types": "./dist/react/index.d.ts"
+    }
+  },
   "files": [
     "dist",
     "README.md"
   ],
   "scripts": {
-    "build": "tsc",
-    "prepare": "npm run build",
-    "start": "nodemon src/create-wallet.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
   },
-  "keywords": [
-    "starknet",
-    "wallet",
-    "paymaster",
-    "gasless",
-    "avnu"
-  ],
-  "author": "chipi-pay",
-  "license": "MIT",
+  "peerDependencies": {
+    "@tanstack/react-query": ">=4.0.0",
+    "react": ">=16.8.0",
+    "starknet": ">=6.23.1"
+  },
   "devDependencies": {
     "@types/crypto-js": "^4.2.2",
-    "nodemon": "^3.1.9",
-    "ts-node": "^10.9.2",
+    "@types/react": "^18.2.0",
+    "react": "^18.2.0",
+    "tsup": "^8.3.6",
     "typescript": "^5.7.3"
   },
   "dependencies": {
     "@avnu/gasless-sdk": "^0.1.7",
-    "crypto-js": "^4.2.0",
-    "starknet": "^6.23.1"
+    "crypto-js": "^4.2.0"
   }
 }
