@@ -1,13 +1,13 @@
 'use strict';
 
-var chunkUFWQNYTR_js = require('./chunk-UFWQNYTR.js');
+var chunkMPRYGBXW_js = require('./chunk-MPRYGBXW.js');
 var gaslessSdk = require('@avnu/gasless-sdk');
 var starknet = require('starknet');
 
 var executePaymasterTransaction = async (input) => {
   try {
     const { pin, wallet, calls, rpcUrl, options } = input;
-    const privateKeyDecrypted = chunkUFWQNYTR_js.decryptPrivateKey(
+    const privateKeyDecrypted = chunkMPRYGBXW_js.decryptPrivateKey(
       wallet.encryptedPrivateKey,
       pin
     );
@@ -55,11 +55,11 @@ var ChipiSDK = class {
     this.contractAddress = config.contractAddress;
     this.contractEntryPoint = config.contractEntryPoint || "get_counter";
   }
-  async createWallet(encryptKey) {
-    return chunkUFWQNYTR_js.createArgentWallet({
-      encryptKey
-    });
-  }
+  // async createWallet(encryptKey: string): Promise<TransactionResult> {
+  //   return createArgentWallet({
+  //     encryptKey,
+  //   });
+  // }
   async executeTransaction(input) {
     return executePaymasterTransaction({
       ...input,
@@ -71,23 +71,23 @@ var ChipiSDK = class {
 
 Object.defineProperty(exports, "ChipiProvider", {
   enumerable: true,
-  get: function () { return chunkUFWQNYTR_js.ChipiProvider; }
+  get: function () { return chunkMPRYGBXW_js.ChipiProvider; }
 });
 Object.defineProperty(exports, "createArgentWallet", {
   enumerable: true,
-  get: function () { return chunkUFWQNYTR_js.createArgentWallet; }
+  get: function () { return chunkMPRYGBXW_js.createArgentWallet; }
 });
 Object.defineProperty(exports, "useChipiContext", {
   enumerable: true,
-  get: function () { return chunkUFWQNYTR_js.useChipiContext; }
+  get: function () { return chunkMPRYGBXW_js.useChipiContext; }
 });
 Object.defineProperty(exports, "useCreateWallet", {
   enumerable: true,
-  get: function () { return chunkUFWQNYTR_js.useCreateWallet; }
+  get: function () { return chunkMPRYGBXW_js.useCreateWallet; }
 });
 Object.defineProperty(exports, "useSign", {
   enumerable: true,
-  get: function () { return chunkUFWQNYTR_js.useSign; }
+  get: function () { return chunkMPRYGBXW_js.useSign; }
 });
 exports.ChipiSDK = ChipiSDK;
 exports.executePaymasterTransaction = executePaymasterTransaction;

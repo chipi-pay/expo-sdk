@@ -22,6 +22,7 @@ import { WalletData } from "./types";
 
 export interface CreateWalletParams {
   encryptKey: string;
+  apiKey: string;
 }
 
 export interface CreateWalletResponse {
@@ -41,12 +42,12 @@ export const createArgentWallet = async (
   params: CreateWalletParams
 ): Promise<CreateWalletResponse> => {
   try {
-    const { encryptKey } = params;
+    const { encryptKey, apiKey } = params;
 
     const rpcUrl = "https://rpc.ankr.com/starknet";
     const options: GaslessOptions = {
       baseUrl: "https://starknet.api.avnu.fi",
-      apiKey: "98564df8-122b-4708-a2d2-ea6c93b85d46",
+      apiKey,
     };
     const provider = new RpcProvider({
       nodeUrl: rpcUrl,

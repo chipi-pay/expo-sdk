@@ -1,6 +1,10 @@
 import { createContext, useContext } from 'react';
-import type { ChipiSDKConfig } from '../../core/types';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+export interface ChipiSDKConfig {
+  apiKey: string;
+  // Add other config options here as needed
+}
 
 interface ChipiContextValue {
   config: ChipiSDKConfig;
@@ -16,6 +20,10 @@ export function ChipiProvider({
   children: React.ReactNode;
   config: ChipiSDKConfig;
 }) {
+  if (!config.apiKey) {
+    throw new Error('Chipi SDK requires an API key');
+  }
+
   return (
     <ChipiContext.Provider value={{ config }}>
       <QueryClientProvider client={queryClient}>

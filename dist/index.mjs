@@ -1,5 +1,5 @@
-import { decryptPrivateKey, createArgentWallet } from './chunk-2Y4LPIJH.mjs';
-export { ChipiProvider, createArgentWallet, useChipiContext, useCreateWallet, useSign } from './chunk-2Y4LPIJH.mjs';
+import { decryptPrivateKey } from './chunk-UQHO6PUW.mjs';
+export { ChipiProvider, createArgentWallet, useChipiContext, useCreateWallet, useSign } from './chunk-UQHO6PUW.mjs';
 import { fetchBuildTypedData, fetchExecuteTransaction, BASE_URL } from '@avnu/gasless-sdk';
 import { RpcProvider, Account } from 'starknet';
 
@@ -54,11 +54,11 @@ var ChipiSDK = class {
     this.contractAddress = config.contractAddress;
     this.contractEntryPoint = config.contractEntryPoint || "get_counter";
   }
-  async createWallet(encryptKey) {
-    return createArgentWallet({
-      encryptKey
-    });
-  }
+  // async createWallet(encryptKey: string): Promise<TransactionResult> {
+  //   return createArgentWallet({
+  //     encryptKey,
+  //   });
+  // }
   async executeTransaction(input) {
     return executePaymasterTransaction({
       ...input,

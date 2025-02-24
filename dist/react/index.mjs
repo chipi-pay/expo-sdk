@@ -1,3 +1,3 @@
-export { ChipiProvider, useChipiContext, useCreateWallet, useSign } from '../chunk-2Y4LPIJH.mjs';
+export { ChipiProvider, useChipiContext, useCreateWallet, useSign } from '../chunk-UQHO6PUW.mjs';
 //# sourceMappingURL=index.mjs.map
 //# sourceMappingURL=index.mjs.map

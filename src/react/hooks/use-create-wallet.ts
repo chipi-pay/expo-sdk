@@ -1,5 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { createArgentWallet, CreateWalletParams, CreateWalletResponse } from '../../core/create-wallet';
+import { useChipiContext } from '../context';
 
 interface UseCreateWalletOptions {
   onSuccess?: (createWalletResponse: CreateWalletResponse) => void;
@@ -8,8 +9,12 @@ interface UseCreateWalletOptions {
 
 
 export function useCreateWallet(options?: UseCreateWalletOptions) {
-  const mutation = useMutation<CreateWalletResponse, Error, CreateWalletParams>({
-    mutationFn: createArgentWallet,
+  const { config } = useChipiContext();
+  const mutation = useMutation<CreateWalletResponse, Error, Omit<CreateWalletParams, 'apiKey'>>({
+    mutationFn: (params) => createArgentWallet({ 
+      ...params,
+      apiKey: config.apiKey 
+    }),
     onSuccess: options?.onSuccess,
     onError: options?.onError,
   });

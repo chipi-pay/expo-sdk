@@ -21,11 +21,11 @@ export class ChipiSDK {
     this.contractEntryPoint = config.contractEntryPoint || "get_counter";
   }
 
-  async createWallet(encryptKey: string): Promise<TransactionResult> {
-    return createArgentWallet({
-      encryptKey,
-    });
-  }
+  // async createWallet(encryptKey: string): Promise<TransactionResult> {
+  //   return createArgentWallet({
+  //     encryptKey,
+  //   });
+  // }
 
   async executeTransaction(input: ExecutePaymasterTransactionInput): Promise<string | null> {
     return executePaymasterTransaction({
