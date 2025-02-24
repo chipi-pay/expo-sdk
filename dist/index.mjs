@@ -1,6 +1,6 @@
-import { decryptPrivateKey, createArgentWallet } from './chunk-Y5XQTXHQ.mjs';
-export { ChipiProvider, createArgentWallet, useChipiContext, useCreateWallet, useSign } from './chunk-Y5XQTXHQ.mjs';
-import { fetchBuildTypedData, fetchExecuteTransaction } from '@avnu/gasless-sdk';
+import { decryptPrivateKey, createArgentWallet } from './chunk-2Y4LPIJH.mjs';
+export { ChipiProvider, createArgentWallet, useChipiContext, useCreateWallet, useSign } from './chunk-2Y4LPIJH.mjs';
+import { fetchBuildTypedData, fetchExecuteTransaction, BASE_URL } from '@avnu/gasless-sdk';
 import { RpcProvider, Account } from 'starknet';
 
 var executePaymasterTransaction = async (input) => {
@@ -46,22 +46,17 @@ var executePaymasterTransaction = async (input) => {
 var ChipiSDK = class {
   constructor(config) {
     this.options = {
-      baseUrl: "https://paymaster.avnu.fi",
-      apiKey: config.paymasterApiKey
+      baseUrl: BASE_URL,
+      apiKey: config.apiKey
     };
     this.rpcUrl = config.rpcUrl;
     this.argentClassHash = config.argentClassHash;
     this.contractAddress = config.contractAddress;
     this.contractEntryPoint = config.contractEntryPoint || "get_counter";
   }
-  async createWallet(pin) {
+  async createWallet(encryptKey) {
     return createArgentWallet({
-      pin,
-      rpcUrl: this.rpcUrl,
-      options: this.options,
-      argentClassHash: this.argentClassHash,
-      contractAddress: this.contractAddress,
-      contractEntryPoint: this.contractEntryPoint
+      encryptKey
     });
   }
   async executeTransaction(input) {

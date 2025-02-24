@@ -1,11 +1,13 @@
 import { createContext, useContext } from 'react';
 import type { ChipiSDKConfig } from '../../core/types';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 interface ChipiContextValue {
   config: ChipiSDKConfig;
 }
 
 const ChipiContext = createContext<ChipiContextValue | null>(null);
+const queryClient = new QueryClient();
 
 export function ChipiProvider({ 
   children, 
@@ -16,7 +18,9 @@ export function ChipiProvider({
 }) {
   return (
     <ChipiContext.Provider value={{ config }}>
-      {children}
+      <QueryClientProvider client={queryClient}>
+        {children}
+      </QueryClientProvider>
     </ChipiContext.Provider>
   );
 }

@@ -1,7 +1,7 @@
 import { GaslessOptions } from '@avnu/gasless-sdk';
 import { Call } from 'starknet';
-import { C as ChipiSDKConfig, T as TransactionResult } from './index-DiW3OmGT.js';
-export { a as ChipiProvider, d as ChipiProviderProps, W as WalletData, u as useChipiContext, b as useCreateWallet, c as useSign } from './index-DiW3OmGT.js';
+import { C as ChipiSDKConfig, T as TransactionResult } from './index-D6nVG4M9.js';
+export { b as ChipiProvider, f as ChipiProviderProps, a as CreateWalletResponse, W as WalletData, c as createArgentWallet, u as useChipiContext, d as useCreateWallet, e as useSign } from './index-D6nVG4M9.js';
 import 'react/jsx-runtime';
 import '@tanstack/react-query';
 
@@ -24,22 +24,8 @@ declare class ChipiSDK {
     private contractAddress;
     private contractEntryPoint;
     constructor(config: ChipiSDKConfig);
-    createWallet(pin: string): Promise<TransactionResult>;
+    createWallet(encryptKey: string): Promise<TransactionResult>;
     executeTransaction(input: ExecutePaymasterTransactionInput): Promise<string | null>;
 }
 
-interface CreateWalletParams {
-    pin: string;
-    rpcUrl: string;
-    options: GaslessOptions;
-    argentClassHash: string;
-    contractAddress: string;
-    contractEntryPoint: string;
-}
-declare const createArgentWallet: (params: CreateWalletParams) => Promise<{
-    success: boolean;
-    accountAddress: string;
-    txHash: string;
-}>;
-
-export { ChipiSDK, ChipiSDKConfig, TransactionResult, createArgentWallet, executePaymasterTransaction };
+export { ChipiSDK, ChipiSDKConfig, TransactionResult, executePaymasterTransaction };

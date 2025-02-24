@@ -2,7 +2,7 @@ import * as react_jsx_runtime from 'react/jsx-runtime';
 import * as _tanstack_react_query from '@tanstack/react-query';
 
 interface ChipiSDKConfig {
-    paymasterApiKey: string;
+    apiKey: string;
     rpcUrl: string;
     argentClassHash: string;
     contractAddress: string;
@@ -17,6 +17,16 @@ interface TransactionResult {
     txHash: string;
 }
 
+interface CreateWalletParams {
+    encryptKey: string;
+}
+interface CreateWalletResponse {
+    success: boolean;
+    wallet: WalletData;
+    txHash: string;
+}
+declare const createArgentWallet: (params: CreateWalletParams) => Promise<CreateWalletResponse>;
+
 interface ChipiContextValue {
     config: ChipiSDKConfig;
 }
@@ -27,26 +37,15 @@ declare function ChipiProvider({ children, config }: {
 declare function useChipiContext(): ChipiContextValue;
 
 interface UseCreateWalletOptions {
-    onSuccess?: (wallet: WalletData) => void;
+    onSuccess?: (createWalletResponse: CreateWalletResponse) => void;
     onError?: (error: Error) => void;
 }
 declare function useCreateWallet(options?: UseCreateWalletOptions): {
-    createWallet: _tanstack_react_query.UseMutateFunction<{
-        publicKey: string;
-        encryptedPrivateKey: string;
-        accountAddress: string;
-        txHash: string;
-        success: boolean;
-    }, Error, string, unknown>;
+    createWallet: _tanstack_react_query.UseMutateFunction<CreateWalletResponse, Error, CreateWalletParams, unknown>;
+    createWalletAsync: _tanstack_react_query.UseMutateAsyncFunction<CreateWalletResponse, Error, CreateWalletParams, unknown>;
     isCreating: boolean;
     error: Error | null;
-    wallet: {
-        publicKey: string;
-        encryptedPrivateKey: string;
-        accountAddress: string;
-        txHash: string;
-        success: boolean;
-    } | undefined;
+    wallet: CreateWalletResponse | undefined;
 };
 
 declare function useSign(): {
@@ -58,4 +57,4 @@ interface ChipiProviderProps {
     config: ChipiSDKConfig;
 }
 
-export { type ChipiSDKConfig as C, type TransactionResult as T, type WalletData as W, ChipiProvider as a, useCreateWallet as b, useSign as c, type ChipiProviderProps as d, useChipiContext as u };
+export { type ChipiSDKConfig as C, type TransactionResult as T, type WalletData as W, type CreateWalletResponse as a, ChipiProvider as b, createArgentWallet as c, useCreateWallet as d, useSign as e, type ChipiProviderProps as f, useChipiContext as u };

@@ -1,24 +1,24 @@
 'use strict';
 
-var chunkE2UQ7DG4_js = require('../chunk-E2UQ7DG4.js');
+var chunkUFWQNYTR_js = require('../chunk-UFWQNYTR.js');
 
 
 
 Object.defineProperty(exports, "ChipiProvider", {
   enumerable: true,
-  get: function () { return chunkE2UQ7DG4_js.ChipiProvider; }
+  get: function () { return chunkUFWQNYTR_js.ChipiProvider; }
 });
 Object.defineProperty(exports, "useChipiContext", {
   enumerable: true,
-  get: function () { return chunkE2UQ7DG4_js.useChipiContext; }
+  get: function () { return chunkUFWQNYTR_js.useChipiContext; }
 });
 Object.defineProperty(exports, "useCreateWallet", {
   enumerable: true,
-  get: function () { return chunkE2UQ7DG4_js.useCreateWallet; }
+  get: function () { return chunkUFWQNYTR_js.useCreateWallet; }
 });
 Object.defineProperty(exports, "useSign", {
   enumerable: true,
-  get: function () { return chunkE2UQ7DG4_js.useSign; }
+  get: function () { return chunkUFWQNYTR_js.useSign; }
 });
 //# sourceMappingURL=index.js.map
 //# sourceMappingURL=index.js.map

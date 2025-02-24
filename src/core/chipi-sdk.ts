@@ -21,14 +21,9 @@ export class ChipiSDK {
     this.contractEntryPoint = config.contractEntryPoint || "get_counter";
   }
 
-  async createWallet(pin: string): Promise<TransactionResult> {
+  async createWallet(encryptKey: string): Promise<TransactionResult> {
     return createArgentWallet({
-      pin,
-      rpcUrl: this.rpcUrl,
-      options: this.options,
-      argentClassHash: this.argentClassHash,
-      contractAddress: this.contractAddress,
-      contractEntryPoint: this.contractEntryPoint,
+      encryptKey,
     });
   }
 
