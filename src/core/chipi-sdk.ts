@@ -1,7 +1,7 @@
 import { BASE_URL, GaslessOptions } from "@avnu/gasless-sdk";
 import { createArgentWallet } from "./create-wallet";
-import { ExecutePaymasterTransactionInput, executePaymasterTransaction } from "./send-transaction-with-paymaster";
-import type { ChipiSDKConfig, TransactionResult } from "./types";
+import { executePaymasterTransaction, ExecuteTransactionParams } from "./send-transaction-with-paymaster";
+import type { ChipiSDKConfig, TransactionResult, WalletData } from "./types";
 
 export class ChipiSDK {
   private options: GaslessOptions;
@@ -21,13 +21,18 @@ export class ChipiSDK {
     this.contractEntryPoint = config.contractEntryPoint || "get_counter";
   }
 
-  // async createWallet(encryptKey: string): Promise<TransactionResult> {
+  // async createWallet(pin: string): Promise<TransactionResult> {
   //   return createArgentWallet({
-  //     encryptKey,
+  //     pin,
+  //     rpcUrl: this.rpcUrl,
+  //     options: this.options,
+  //     argentClassHash: this.argentClassHash,
+  //     contractAddress: this.contractAddress,
+  //     contractEntryPoint: this.contractEntryPoint,
   //   });
   // }
 
-  async executeTransaction(input: ExecutePaymasterTransactionInput): Promise<string | null> {
+  async executeTransaction(input: ExecuteTransactionParams): Promise<string | null> {
     return executePaymasterTransaction({
       ...input,
       rpcUrl: this.rpcUrl,
@@ -35,3 +40,10 @@ export class ChipiSDK {
     });
   }
 }
+
+// Export types
+export type {
+  ChipiSDKConfig,
+  WalletData,
+  TransactionResult,
+};
