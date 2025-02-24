@@ -1,28 +1,27 @@
-'use strict';
-
-var chunkMPRYGBXW_js = require('./chunk-MPRYGBXW.js');
-var gaslessSdk = require('@avnu/gasless-sdk');
-var starknet = require('starknet');
+import { decryptPrivateKey } from './chunk-UQHO6PUW.mjs';
+export { ChipiProvider, createArgentWallet, useChipiContext, useCreateWallet, useSign } from './chunk-UQHO6PUW.mjs';
+import { fetchBuildTypedData, fetchExecuteTransaction, BASE_URL } from '@avnu/gasless-sdk';
+import { RpcProvider, Account } from 'starknet';
 
 var executePaymasterTransaction = async (input) => {
   try {
     const { pin, wallet, calls, rpcUrl, options } = input;
-    const privateKeyDecrypted = chunkMPRYGBXW_js.decryptPrivateKey(
+    const privateKeyDecrypted = decryptPrivateKey(
       wallet.encryptedPrivateKey,
       pin
     );
     if (!privateKeyDecrypted) {
       throw new Error("Failed to decrypt private key");
     }
-    const provider = new starknet.RpcProvider({
+    const provider = new RpcProvider({
       nodeUrl: rpcUrl
     });
-    const accountAX = new starknet.Account(
+    const accountAX = new Account(
       provider,
       wallet.publicKey,
       privateKeyDecrypted
     );
-    const typeData = await gaslessSdk.fetchBuildTypedData(
+    const typeData = await fetchBuildTypedData(
       wallet.publicKey,
       calls,
       void 0,
@@ -30,7 +29,7 @@ var executePaymasterTransaction = async (input) => {
       options
     );
     const userSignature = await accountAX.signMessage(typeData);
-    const executeTransaction = await gaslessSdk.fetchExecuteTransaction(
+    const executeTransaction = await fetchExecuteTransaction(
       wallet.publicKey,
       JSON.stringify(typeData),
       userSignature,
@@ -47,7 +46,7 @@ var executePaymasterTransaction = async (input) => {
 var ChipiSDK = class {
   constructor(config) {
     this.options = {
-      baseUrl: gaslessSdk.BASE_URL,
+      baseUrl: BASE_URL,
       apiKey: config.apiKey
     };
     this.rpcUrl = config.rpcUrl;
@@ -69,27 +68,6 @@ var ChipiSDK = class {
   }
 };
 
-Object.defineProperty(exports, "ChipiProvider", {
-  enumerable: true,
-  get: function () { return chunkMPRYGBXW_js.ChipiProvider; }
-});
-Object.defineProperty(exports, "createArgentWallet", {
-  enumerable: true,
-  get: function () { return chunkMPRYGBXW_js.createArgentWallet; }
-});
-Object.defineProperty(exports, "useChipiContext", {
-  enumerable: true,
-  get: function () { return chunkMPRYGBXW_js.useChipiContext; }
-});
-Object.defineProperty(exports, "useCreateWallet", {
-  enumerable: true,
-  get: function () { return chunkMPRYGBXW_js.useCreateWallet; }
-});
-Object.defineProperty(exports, "useSign", {
-  enumerable: true,
-  get: function () { return chunkMPRYGBXW_js.useSign; }
-});
-exports.ChipiSDK = ChipiSDK;
-exports.executePaymasterTransaction = executePaymasterTransaction;
-//# sourceMappingURL=index.js.map
-//# sourceMappingURL=index.js.map
+export { ChipiSDK, executePaymasterTransaction };
+//# sourceMappingURL=index.mjs.map
+//# sourceMappingURL=index.mjs.map

@@ -5,10 +5,14 @@ export interface ChipiSDKConfig {
     argentClassHash: string;
     contractAddress: string;
     contractEntryPoint?: string;
-}
-export interface WalletData {
+  }
+  
+  export interface WalletData {
     publicKey: string;
     encryptedPrivateKey: string;
+  }
+  
+  export interface TransactionResult {
 }
 export interface TransferParams {
     recipient: string;
@@ -40,4 +44,4 @@ export interface TransactionResult {
     accountAddress: string;
     encryptedPrivateKey: string;
     txHash: string;
-}
+  } 
