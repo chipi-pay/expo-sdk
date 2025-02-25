@@ -44,15 +44,12 @@ export class ChipiSDK {
       config.activateContractEntryPoint || "set_greeting";
   }
 
-  private formatAmount(
-    amount: string | number,
-    decimals: number = 18
-  ): Uint256 {
-    const amountBN =
-      typeof amount === "string"
-        ? BigInt(amount) * BigInt(10 ** decimals)
-        : BigInt(amount) * BigInt(10 ** decimals);
-
+  private formatAmount(amount: string | number, decimals: number = 18): Uint256 {
+    const numericAmount = Number(amount);
+    const multiplier = 10 ** decimals;
+    
+    const amountBN = BigInt(Math.round(numericAmount * multiplier));
+    
     return cairo.uint256(amountBN);
   }
 
