@@ -1,3 +1,3 @@
-export { ChipiProvider, ChipiSDK, createArgentWallet, executePaymasterTransaction, useApprove, useCallAnyContract, useChipiContext, useCreateWallet, useStake, useTransfer, useWithdraw } from './chunk-TN47CLQO.mjs';
+export { ChipiProvider, ChipiSDK, createArgentWallet, executePaymasterTransaction, useApprove, useCallAnyContract, useChipiContext, useCreateWallet, useStake, useTransfer, useWithdraw } from './chunk-XNGT5H3L.mjs';
 //# sourceMappingURL=index.mjs.map
 //# sourceMappingURL=index.mjs.map

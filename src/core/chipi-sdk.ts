@@ -45,9 +45,10 @@ export class ChipiSDK {
   }
 
   private formatAmount(amount: string | number, decimals: number = 18): Uint256 {
-    const numericAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
-    const fullAmount = numericAmount * (10 ** decimals);
-    const amountBN = BigInt(Math.round(fullAmount));
+    const strAmount = amount.toString();
+    const [integerPart, decimalPart = ''] = strAmount.split('.');
+    const paddedDecimal = decimalPart.padEnd(decimals, '0').slice(0, decimals);
+    const amountBN = BigInt(integerPart + paddedDecimal);
     
     return cairo.uint256(amountBN);
   }
