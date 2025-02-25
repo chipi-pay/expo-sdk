@@ -1,58 +1,104 @@
-# Chipi SDK
+# Chipi SDK: The Fastest Way to Ship on StarkNet Mainnet
 
-SDK para crear wallets y enviar transacciones usando el paymaster de AVNU.
+Chipi SDK combines invisible wallet creation with social login and Avnu’s paymaster to streamline dApp development on StarkNet. Users log in with familiar accounts (Google, X, Meta), and a wallet is generated behind the scenes—no manual key management needed. Focus on building features instead of dealing with blockchain complexities.
 
-## Instalación
+## Features
+
+- 🔐 **Invisible Wallet Creation**: Generate wallets automatically with social login
+- 💸 **Gasless Transactions**: Integration with Avnu Paymaster
+- 🔄 **Simple Transfers**: Simplified API for token transfers
+- ⚡ **Optimized for StarkNet**: Designed specifically for the StarkNet network
+
+## Installation
 
 ```bash
 npm install @chipi-pay/chipi-sdk
+
+# Add your API keys to the environment variables
+NEXT_PUBLIC_AVNU_API_KEY=tu_api_key_aqui
+NEXT_PUBLIC_INFURA_API_KEY=tu_infura_key_aqui
 ```
 
-## Uso
+## Getting Started
 
 ```typescript
-import { ChipiSDK } from '@chipi-pay/chipi-sdk';
+// app/providers.tsx
 
-// Inicializar el SDK
-const sdk = new ChipiSDK({
-  paymasterApiKey: 'tu-api-key',
-  rpcUrl: 'https://starknet-goerli.infura.io/v3/tu-api-key',
-  argentClassHash: '0x...', // opcional, tiene un valor por defecto
-  contractAddress: '0x...', // opcional, tiene un valor por defecto
-  contractEntryPoint: 'get_counter' // opcional, tiene un valor por defecto
-});
+// Initialize SDK
+import { ChipiProvider } from "@chipi-pay/chipi-sdk";
 
-// Crear wallet
-const wallet = await sdk.createWallet('1234');
-// Resultado: { success: true, txHash: '0x...' }
+const AVNU_API_KEY = process.env.NEXT_PUBLIC_AVNU_API_KEY!;
+const INFURA_API_KEY = process.env.NEXT_PUBLIC_INFURA_API_KEY!;
 
-// Enviar transacción
-const result = await sdk.executeTransaction({
-  pin: '1234',
-  wallet: {
-    publicKey: '0x...',
-    encryptedPrivateKey: 'encrypted...',
-  },
-  calls: [
-    {
-      contractAddress: '0x...',
-      entrypoint: 'increment',
-      calldata: ['0x...']
-    }
-  ]
-});
-// Resultado: string (hash de la transacción) o null si hay error
+if (!AVNU_API_KEY || !INFURA_API_KEY) {
+  throw new Error("AVNU_API_KEY or INFURA_API_KEY is not set");
+}
+
+export function Providers({ children }: { children: React.ReactNode }) {
+  return (
+    <ChipiProvider
+      config={{
+        apiKey: AVNU_API_KEY,
+        rpcUrl:
+          `https://starknet-mainnet.infura.io/v3/${INFURA_API_KEY}`,
+        network: "mainnet",
+      }}
+    >
+      {children}
+    </ChipiProvider>
+  );
+}
 ```
 
-## Tipos
+```typescript
+// app/page.tsx
+import {
+  useApprove,
+  useStake,
+  useCreateWallet,
+  useTransfer,
+  useWithdraw,
+  useCallAnyContract,
+} from "@chipi-pay/chipi-sdk";
+
+export default function Home() {
+  const { createWalletAsync, createWalletResponse } =
+    useCreateWallet();
+  const { transferAsync } = useTransfer();
+
+
+  const handleCreateWallet = async (pin: string) => {
+    const response = await createWalletAsync(pin);
+    console.log("creation response", response);
+    alert("Wallet created");
+  };
+
+  const handleTransfer = async (params: TransferParams) => {
+    const response = await transferAsync(params);
+    console.log("transfer response", response);
+    alert("Transferred");
+  };
+
+  return (
+    <div>
+      <h1>Chipi SDK</h1>
+      <button onClick={handleCreateWallet}>Create Wallet</button>
+      <button onClick={handleTransfer}>Transfer</button>
+    </div>
+  );
+}
+```
+
+## Types
 
 ```typescript
 interface ChipiSDKConfig {
-  paymasterApiKey: string;
+  apiKey: string;
   rpcUrl: string;
   argentClassHash?: string;
-  contractAddress?: string;
-  contractEntryPoint?: string;
+  activateContractAddress?: string;
+  activateContractEntryPoint?: string;
+  network: "mainnet" | "sepolia";
 }
 
 interface WalletData {
@@ -60,8 +106,12 @@ interface WalletData {
   encryptedPrivateKey: string;
 }
 
-interface TransactionResult {
-  success: boolean;
-  txHash: string;
+interface TransferParams {
+  encryptKey: string;
+  wallet: WalletData;
+  contractAddress: string;
+  recipient: string;
+  amount: string | number;
+  decimals?: number;
 }
 ```
