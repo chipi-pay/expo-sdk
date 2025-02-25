@@ -1,6 +1,6 @@
 {
   "name": "@chipi-pay/chipi-sdk",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "SDK para crear wallets y enviar transacciones usando el paymaster de AVNU",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -45,7 +45,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/chipi-pay/chipi-sdk"
+    "url": "https://github.com/chipi-pay/chipi-sdk"
   },
   "bugs": {
     "url": "https://github.com/chipi-pay/chipi-sdk/issues"
