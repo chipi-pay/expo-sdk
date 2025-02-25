@@ -9,6 +9,10 @@ Chipi SDK combines invisible wallet creation with social login and Avnu’s paym
 - 🔄 **Simple Transfers**: Simplified API for token transfers
 - ⚡ **Optimized for StarkNet**: Designed specifically for the StarkNet network
 
+## Live Demo
+
+https://chipi-sdk-clerk-demo.vercel.app/
+
 ## Installation
 
 ```bash
