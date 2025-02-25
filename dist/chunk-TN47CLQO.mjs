@@ -173,9 +173,9 @@ var ChipiSDK = class {
     this.activateContractEntryPoint = config.activateContractEntryPoint || "set_greeting";
   }
   formatAmount(amount, decimals = 18) {
-    const numericAmount = Number(amount);
-    const multiplier = 10 ** decimals;
-    const amountBN = BigInt(Math.round(numericAmount * multiplier));
+    const numericAmount = typeof amount === "string" ? parseFloat(amount) : amount;
+    const fullAmount = numericAmount * 10 ** decimals;
+    const amountBN = BigInt(Math.round(fullAmount));
     return cairo.uint256(amountBN);
   }
   async executeTransaction(input) {
@@ -389,5 +389,5 @@ function useCallAnyContract() {
 }
 
 export { ChipiProvider, ChipiSDK, createArgentWallet, executePaymasterTransaction, useApprove, useCallAnyContract, useChipiContext, useCreateWallet, useStake, useTransfer, useWithdraw };
-//# sourceMappingURL=chunk-57M5CPNL.mjs.map
-//# sourceMappingURL=chunk-57M5CPNL.mjs.map
+//# sourceMappingURL=chunk-TN47CLQO.mjs.map
+//# sourceMappingURL=chunk-TN47CLQO.mjs.map

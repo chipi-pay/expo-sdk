@@ -179,9 +179,9 @@ var ChipiSDK = class {
     this.activateContractEntryPoint = config.activateContractEntryPoint || "set_greeting";
   }
   formatAmount(amount, decimals = 18) {
-    const numericAmount = Number(amount);
-    const multiplier = 10 ** decimals;
-    const amountBN = BigInt(Math.round(numericAmount * multiplier));
+    const numericAmount = typeof amount === "string" ? parseFloat(amount) : amount;
+    const fullAmount = numericAmount * 10 ** decimals;
+    const amountBN = BigInt(Math.round(fullAmount));
     return starknet.cairo.uint256(amountBN);
   }
   async executeTransaction(input) {
@@ -405,5 +405,5 @@ exports.useCreateWallet = useCreateWallet;
 exports.useStake = useStake;
 exports.useTransfer = useTransfer;
 exports.useWithdraw = useWithdraw;
-//# sourceMappingURL=chunk-WHBMELP3.js.map
-//# sourceMappingURL=chunk-WHBMELP3.js.map
+//# sourceMappingURL=chunk-YGDSZP57.js.map
+//# sourceMappingURL=chunk-YGDSZP57.js.map
