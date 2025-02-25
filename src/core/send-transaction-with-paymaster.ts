@@ -12,6 +12,7 @@ import {
       publicKey: string;
       encryptedPrivateKey: string;
     }; //ClerkWallet;
+    contractAddress: string;
     calls: Call[];
     rpcUrl: string;
     options: GaslessOptions;

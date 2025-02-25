@@ -1,11 +1,12 @@
-import { decryptPrivateKey } from './chunk-UQHO6PUW.mjs';
-export { ChipiProvider, createArgentWallet, useChipiContext, useCreateWallet, useSign } from './chunk-UQHO6PUW.mjs';
+import { decryptPrivateKey } from './chunk-777TFSLR.mjs';
+export { ChipiProvider, createArgentWallet, useChipiContext, useCreateWallet, useSign } from './chunk-777TFSLR.mjs';
 import { fetchBuildTypedData, fetchExecuteTransaction, BASE_URL } from '@avnu/gasless-sdk';
-import { RpcProvider, Account } from 'starknet';
+import { RpcProvider, Account, cairo } from 'starknet';
 
-var executePaymasterTransaction = async (input) => {
+var executePaymasterTransaction = async (params) => {
   try {
-    const { pin, wallet, calls, rpcUrl, options } = input;
+    const { pin, wallet, calls, rpcUrl, options } = params;
+    console.log("Params: ", params);
     const privateKeyDecrypted = decryptPrivateKey(
       wallet.encryptedPrivateKey,
       pin
@@ -52,18 +53,83 @@ var ChipiSDK = class {
     this.rpcUrl = config.rpcUrl;
     this.argentClassHash = config.argentClassHash;
     this.contractAddress = config.contractAddress;
-    this.contractEntryPoint = config.contractEntryPoint || "get_counter";
+    this.contractEntryPoint = config.contractEntryPoint || "set_greeting";
   }
-  // async createWallet(encryptKey: string): Promise<TransactionResult> {
-  //   return createArgentWallet({
-  //     encryptKey,
-  //   });
-  // }
+  formatAmount(amount, decimals = 18) {
+    const amountBN = typeof amount === "string" ? BigInt(amount) * BigInt(10 ** decimals) : BigInt(amount) * BigInt(10 ** decimals);
+    return cairo.uint256(amountBN);
+  }
   async executeTransaction(input) {
     return executePaymasterTransaction({
       ...input,
       rpcUrl: this.rpcUrl,
       options: this.options
+    });
+  }
+  async transfer(params) {
+    return this.executeTransaction({
+      pin: params.pin,
+      wallet: params.wallet,
+      contractAddress: params.contractAddress,
+      rpcUrl: this.rpcUrl,
+      options: this.options,
+      calls: [{
+        contractAddress: params.contractAddress,
+        entrypoint: "transfer",
+        calldata: [params.recipient, this.formatAmount(params.amount, params.decimals)]
+      }]
+    });
+  }
+  async approve(params) {
+    return this.executeTransaction({
+      pin: params.pin,
+      wallet: params.wallet,
+      contractAddress: params.contractAddress,
+      rpcUrl: this.rpcUrl,
+      options: this.options,
+      calls: [{
+        contractAddress: params.contractAddress,
+        entrypoint: "approve",
+        calldata: [params.spender, this.formatAmount(params.amount, params.decimals)]
+      }]
+    });
+  }
+  async stake(params) {
+    return this.executeTransaction({
+      pin: params.pin,
+      wallet: params.wallet,
+      contractAddress: params.contractAddress,
+      rpcUrl: this.rpcUrl,
+      options: this.options,
+      calls: [{
+        contractAddress: params.contractAddress,
+        entrypoint: "deposit",
+        calldata: [this.formatAmount(params.amount, params.decimals), params.recipient]
+      }]
+    });
+  }
+  async withdraw(params) {
+    return this.executeTransaction({
+      pin: params.pin,
+      wallet: params.wallet,
+      contractAddress: params.contractAddress,
+      rpcUrl: this.rpcUrl,
+      options: this.options,
+      calls: [{
+        contractAddress: params.contractAddress,
+        entrypoint: "withdraw",
+        calldata: [this.formatAmount(params.amount, params.decimals), params.recipient]
+      }]
+    });
+  }
+  async callAnyContract(params) {
+    return this.executeTransaction({
+      pin: params.pin,
+      wallet: params.wallet,
+      contractAddress: params.contractAddress,
+      rpcUrl: this.rpcUrl,
+      options: this.options,
+      calls: params.calls
     });
   }
 };

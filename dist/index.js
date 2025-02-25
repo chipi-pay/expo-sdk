@@ -1,13 +1,14 @@
 'use strict';
 
-var chunkMPRYGBXW_js = require('./chunk-MPRYGBXW.js');
+var chunkN54CARR6_js = require('./chunk-N54CARR6.js');
 var gaslessSdk = require('@avnu/gasless-sdk');
 var starknet = require('starknet');
 
-var executePaymasterTransaction = async (input) => {
+var executePaymasterTransaction = async (params) => {
   try {
-    const { pin, wallet, calls, rpcUrl, options } = input;
-    const privateKeyDecrypted = chunkMPRYGBXW_js.decryptPrivateKey(
+    const { pin, wallet, calls, rpcUrl, options } = params;
+    console.log("Params: ", params);
+    const privateKeyDecrypted = chunkN54CARR6_js.decryptPrivateKey(
       wallet.encryptedPrivateKey,
       pin
     );
@@ -53,13 +54,12 @@ var ChipiSDK = class {
     this.rpcUrl = config.rpcUrl;
     this.argentClassHash = config.argentClassHash;
     this.contractAddress = config.contractAddress;
-    this.contractEntryPoint = config.contractEntryPoint || "get_counter";
+    this.contractEntryPoint = config.contractEntryPoint || "set_greeting";
   }
-  // async createWallet(encryptKey: string): Promise<TransactionResult> {
-  //   return createArgentWallet({
-  //     encryptKey,
-  //   });
-  // }
+  formatAmount(amount, decimals = 18) {
+    const amountBN = typeof amount === "string" ? BigInt(amount) * BigInt(10 ** decimals) : BigInt(amount) * BigInt(10 ** decimals);
+    return starknet.cairo.uint256(amountBN);
+  }
   async executeTransaction(input) {
     return executePaymasterTransaction({
       ...input,
@@ -67,27 +67,93 @@ var ChipiSDK = class {
       options: this.options
     });
   }
+  async transfer(params) {
+    return this.executeTransaction({
+      pin: params.pin,
+      wallet: params.wallet,
+      contractAddress: params.contractAddress,
+      rpcUrl: this.rpcUrl,
+      options: this.options,
+      calls: [{
+        contractAddress: params.contractAddress,
+        entrypoint: "transfer",
+        calldata: [params.recipient, this.formatAmount(params.amount, params.decimals)]
+      }]
+    });
+  }
+  async approve(params) {
+    return this.executeTransaction({
+      pin: params.pin,
+      wallet: params.wallet,
+      contractAddress: params.contractAddress,
+      rpcUrl: this.rpcUrl,
+      options: this.options,
+      calls: [{
+        contractAddress: params.contractAddress,
+        entrypoint: "approve",
+        calldata: [params.spender, this.formatAmount(params.amount, params.decimals)]
+      }]
+    });
+  }
+  async stake(params) {
+    return this.executeTransaction({
+      pin: params.pin,
+      wallet: params.wallet,
+      contractAddress: params.contractAddress,
+      rpcUrl: this.rpcUrl,
+      options: this.options,
+      calls: [{
+        contractAddress: params.contractAddress,
+        entrypoint: "deposit",
+        calldata: [this.formatAmount(params.amount, params.decimals), params.recipient]
+      }]
+    });
+  }
+  async withdraw(params) {
+    return this.executeTransaction({
+      pin: params.pin,
+      wallet: params.wallet,
+      contractAddress: params.contractAddress,
+      rpcUrl: this.rpcUrl,
+      options: this.options,
+      calls: [{
+        contractAddress: params.contractAddress,
+        entrypoint: "withdraw",
+        calldata: [this.formatAmount(params.amount, params.decimals), params.recipient]
+      }]
+    });
+  }
+  async callAnyContract(params) {
+    return this.executeTransaction({
+      pin: params.pin,
+      wallet: params.wallet,
+      contractAddress: params.contractAddress,
+      rpcUrl: this.rpcUrl,
+      options: this.options,
+      calls: params.calls
+    });
+  }
 };
 
 Object.defineProperty(exports, "ChipiProvider", {
   enumerable: true,
-  get: function () { return chunkMPRYGBXW_js.ChipiProvider; }
+  get: function () { return chunkN54CARR6_js.ChipiProvider; }
 });
 Object.defineProperty(exports, "createArgentWallet", {
   enumerable: true,
-  get: function () { return chunkMPRYGBXW_js.createArgentWallet; }
+  get: function () { return chunkN54CARR6_js.createArgentWallet; }
 });
 Object.defineProperty(exports, "useChipiContext", {
   enumerable: true,
-  get: function () { return chunkMPRYGBXW_js.useChipiContext; }
+  get: function () { return chunkN54CARR6_js.useChipiContext; }
 });
 Object.defineProperty(exports, "useCreateWallet", {
   enumerable: true,
-  get: function () { return chunkMPRYGBXW_js.useCreateWallet; }
+  get: function () { return chunkN54CARR6_js.useCreateWallet; }
 });
 Object.defineProperty(exports, "useSign", {
   enumerable: true,
-  get: function () { return chunkMPRYGBXW_js.useSign; }
+  get: function () { return chunkN54CARR6_js.useSign; }
 });
 exports.ChipiSDK = ChipiSDK;
 exports.executePaymasterTransaction = executePaymasterTransaction;

@@ -56,14 +56,13 @@ var decryptPrivateKey = (encryptedPrivateKey, password) => {
 
 // src/core/create-wallet.ts
 var ARGENT_CLASSHASH = "0x036078334509b514626504edc9fb252328d1a240e4e948bef8d0c08dff45927f";
-var CONTRACT_ADDRESS = "0x05039371eb9f5725bb3012934b8821ff3eb3b48cbdee3a29f798c17e9a641544";
-var CONTRACT_ENTRY_POINT_GET_COUNTER = "get_counter";
+var CONTRACT_ADDRESS = "0x0425fe282af8a0fce7478e06d21295fe85e57447f4f5127f80a04ef2eb6291fd";
+var CONTRACT_ENTRY_POINT_SET_GREETING = "set_greeting";
 var createArgentWallet = async (params) => {
   try {
-    const { encryptKey, apiKey } = params;
-    const rpcUrl = "https://rpc.ankr.com/starknet";
+    const { encryptKey, apiKey, network, rpcUrl } = params;
     const options = {
-      baseUrl: "https://starknet.api.avnu.fi",
+      baseUrl: network === "mainnet" ? gaslessSdk.BASE_URL : gaslessSdk.SEPOLIA_BASE_URL,
       apiKey
     };
     const provider = new starknet.RpcProvider({
@@ -91,8 +90,8 @@ var createArgentWallet = async (params) => {
     const initialValue = [
       {
         contractAddress: CONTRACT_ADDRESS,
-        entrypoint: CONTRACT_ENTRY_POINT_GET_COUNTER,
-        calldata: [contractAddress]
+        entrypoint: CONTRACT_ENTRY_POINT_SET_GREETING,
+        calldata: [contractAddress, starknet.cairo.felt("Hello, from Chipi SDK!")]
       }
     ];
     const typeData = await gaslessSdk.fetchBuildTypedData(
@@ -153,8 +152,8 @@ function useCreateWallet(options) {
       ...params,
       apiKey: config.apiKey
     }),
-    onSuccess: options == null ? void 0 : options.onSuccess,
-    onError: options == null ? void 0 : options.onError
+    onSuccess: options?.onSuccess,
+    onError: options?.onError
   });
   return {
     createWallet: mutation.mutate,
@@ -180,5 +179,5 @@ exports.decryptPrivateKey = decryptPrivateKey;
 exports.useChipiContext = useChipiContext;
 exports.useCreateWallet = useCreateWallet;
 exports.useSign = useSign;
-//# sourceMappingURL=chunk-MPRYGBXW.js.map
-//# sourceMappingURL=chunk-MPRYGBXW.js.map
+//# sourceMappingURL=chunk-N54CARR6.js.map
+//# sourceMappingURL=chunk-N54CARR6.js.map

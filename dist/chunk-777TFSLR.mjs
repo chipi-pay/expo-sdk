@@ -1,8 +1,8 @@
 import { createContext, useContext } from 'react';
 import { QueryClient, QueryClientProvider, useMutation } from '@tanstack/react-query';
 import { jsx } from 'react/jsx-runtime';
-import { fetchBuildTypedData, BASE_URL, fetchExecuteTransaction } from '@avnu/gasless-sdk';
-import { RpcProvider, stark, ec, CairoCustomEnum, CairoOption, CairoOptionVariant, CallData, hash, Account, num } from 'starknet';
+import { BASE_URL, SEPOLIA_BASE_URL, fetchBuildTypedData, fetchExecuteTransaction } from '@avnu/gasless-sdk';
+import { RpcProvider, stark, ec, CairoCustomEnum, CairoOption, CairoOptionVariant, CallData, hash, Account, cairo, num } from 'starknet';
 import CryptoJS from 'crypto-js';
 
 // src/react/context/chipi-provider.tsx
@@ -50,14 +50,13 @@ var decryptPrivateKey = (encryptedPrivateKey, password) => {
 
 // src/core/create-wallet.ts
 var ARGENT_CLASSHASH = "0x036078334509b514626504edc9fb252328d1a240e4e948bef8d0c08dff45927f";
-var CONTRACT_ADDRESS = "0x05039371eb9f5725bb3012934b8821ff3eb3b48cbdee3a29f798c17e9a641544";
-var CONTRACT_ENTRY_POINT_GET_COUNTER = "get_counter";
+var CONTRACT_ADDRESS = "0x0425fe282af8a0fce7478e06d21295fe85e57447f4f5127f80a04ef2eb6291fd";
+var CONTRACT_ENTRY_POINT_SET_GREETING = "set_greeting";
 var createArgentWallet = async (params) => {
   try {
-    const { encryptKey, apiKey } = params;
-    const rpcUrl = "https://rpc.ankr.com/starknet";
+    const { encryptKey, apiKey, network, rpcUrl } = params;
     const options = {
-      baseUrl: "https://starknet.api.avnu.fi",
+      baseUrl: network === "mainnet" ? BASE_URL : SEPOLIA_BASE_URL,
       apiKey
     };
     const provider = new RpcProvider({
@@ -85,8 +84,8 @@ var createArgentWallet = async (params) => {
     const initialValue = [
       {
         contractAddress: CONTRACT_ADDRESS,
-        entrypoint: CONTRACT_ENTRY_POINT_GET_COUNTER,
-        calldata: [contractAddress]
+        entrypoint: CONTRACT_ENTRY_POINT_SET_GREETING,
+        calldata: [contractAddress, cairo.felt("Hello, from Chipi SDK!")]
       }
     ];
     const typeData = await fetchBuildTypedData(
@@ -147,8 +146,8 @@ function useCreateWallet(options) {
       ...params,
       apiKey: config.apiKey
     }),
-    onSuccess: options == null ? void 0 : options.onSuccess,
-    onError: options == null ? void 0 : options.onError
+    onSuccess: options?.onSuccess,
+    onError: options?.onError
   });
   return {
     createWallet: mutation.mutate,
@@ -169,5 +168,5 @@ function useSign() {
 }
 
 export { ChipiProvider, createArgentWallet, decryptPrivateKey, useChipiContext, useCreateWallet, useSign };
-//# sourceMappingURL=chunk-UQHO6PUW.mjs.map
-//# sourceMappingURL=chunk-UQHO6PUW.mjs.map
+//# sourceMappingURL=chunk-777TFSLR.mjs.map
+//# sourceMappingURL=chunk-777TFSLR.mjs.map

@@ -5,6 +5,7 @@ export interface ChipiSDKConfig {
     argentClassHash: string;
     contractAddress: string;
     contractEntryPoint?: string;
+    network: "mainnet" | "sepolia";
   }
   
   export interface WalletData {

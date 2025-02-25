@@ -1,12 +1,14 @@
 import type { DeploymentData, GaslessOptions } from "@avnu/gasless-sdk";
 import {
   BASE_URL,
+  SEPOLIA_BASE_URL,
   fetchBuildTypedData,
   fetchExecuteTransaction,
 } from "@avnu/gasless-sdk";
 import type { Call } from "starknet";
 import {
   Account,
+  cairo,
   CairoCustomEnum,
   CairoOption,
   CairoOptionVariant,
@@ -23,6 +25,8 @@ import { WalletData } from "./types";
 export interface CreateWalletParams {
   encryptKey: string;
   apiKey: string;
+  network: "mainnet" | "sepolia";
+  rpcUrl: string;
 }
 
 export interface CreateWalletResponse {
@@ -35,18 +39,17 @@ const ARGENT_CLASSHASH =
   "0x036078334509b514626504edc9fb252328d1a240e4e948bef8d0c08dff45927f";
 
 const CONTRACT_ADDRESS =
-  "0x05039371eb9f5725bb3012934b8821ff3eb3b48cbdee3a29f798c17e9a641544";
-const CONTRACT_ENTRY_POINT_GET_COUNTER = "get_counter";
+  "0x0425fe282af8a0fce7478e06d21295fe85e57447f4f5127f80a04ef2eb6291fd";
+const CONTRACT_ENTRY_POINT_SET_GREETING = "set_greeting";
 
 export const createArgentWallet = async (
   params: CreateWalletParams
 ): Promise<CreateWalletResponse> => {
   try {
-    const { encryptKey, apiKey } = params;
+    const { encryptKey, apiKey, network, rpcUrl } = params;
 
-    const rpcUrl = "https://rpc.ankr.com/starknet";
     const options: GaslessOptions = {
-      baseUrl: "https://starknet.api.avnu.fi",
+      baseUrl: network === "mainnet" ? BASE_URL : SEPOLIA_BASE_URL,
       apiKey,
     };
     const provider = new RpcProvider({
@@ -88,8 +91,8 @@ export const createArgentWallet = async (
     const initialValue: Call[] = [
       {
         contractAddress: CONTRACT_ADDRESS,
-        entrypoint: CONTRACT_ENTRY_POINT_GET_COUNTER,
-        calldata: [contractAddress],
+        entrypoint: CONTRACT_ENTRY_POINT_SET_GREETING,
+        calldata: [contractAddress, cairo.felt("Hello, from Chipi SDK!")],
       },
     ];
 
