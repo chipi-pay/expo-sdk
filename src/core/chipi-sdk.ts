@@ -45,11 +45,11 @@ export class ChipiSDK {
   }
 
   private formatAmount(amount: string | number, decimals: number = 18): Uint256 {
-    const strAmount = amount.toString();
-    const [integerPart, decimalPart = ''] = strAmount.split('.');
+    const amountStr = amount.toString();
+    const [integerPart, decimalPart = ''] = amountStr.split('.');
     const paddedDecimal = decimalPart.padEnd(decimals, '0').slice(0, decimals);
     const amountBN = BigInt(integerPart + paddedDecimal);
-    
+
     return cairo.uint256(amountBN);
   }
 
