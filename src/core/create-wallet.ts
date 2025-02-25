@@ -20,31 +20,14 @@ import {
   stark,
 } from "starknet";
 import { encryptPrivateKey } from "./lib/encryption";
-import { WalletData } from "./types";
+import { CreateWalletParams, CreateWalletResponse, WalletData } from "./types";
 
-export interface CreateWalletParams {
-  encryptKey: string;
-  apiKey: string;
-  network: "mainnet" | "sepolia";
-  rpcUrl: string;
-}
-
-export interface CreateWalletResponse {
-  success: boolean;
-  wallet: WalletData;
-  txHash: string;
-}
-
-const ARGENT_CLASSHASH =
-  "0x036078334509b514626504edc9fb252328d1a240e4e948bef8d0c08dff45927f";
-
-const CONTRACT_ADDRESS =
-  "0x0425fe282af8a0fce7478e06d21295fe85e57447f4f5127f80a04ef2eb6291fd";
-const CONTRACT_ENTRY_POINT_SET_GREETING = "set_greeting";
 
 export const createArgentWallet = async (
   params: CreateWalletParams
 ): Promise<CreateWalletResponse> => {
+
+  console.log("create wallet Params: ", params);
   try {
     const { encryptKey, apiKey, network, rpcUrl } = params;
 
@@ -62,7 +45,7 @@ export const createArgentWallet = async (
 
     // Using Argent X Account v0.4.0 class hash
     // POR REVISAR: CLASSHASH ES EL MISMO EN MAINNET?
-    const accountClassHash = ARGENT_CLASSHASH;
+    const accountClassHash = params.argentClassHash;
 
     // Calculate future address of the ArgentX account
     const axSigner = new CairoCustomEnum({
@@ -90,9 +73,9 @@ export const createArgentWallet = async (
     // Ping to activate the account
     const initialValue: Call[] = [
       {
-        contractAddress: CONTRACT_ADDRESS,
-        entrypoint: CONTRACT_ENTRY_POINT_SET_GREETING,
-        calldata: [contractAddress, cairo.felt("Hello, from Chipi SDK!")],
+        contractAddress: params.activateContractAddress,
+        entrypoint: params.activateContractEntryPoint,
+        calldata: [contractAddress], // , cairo.felt("Hello, from Chipi SDK!")
       },
     ];
 
