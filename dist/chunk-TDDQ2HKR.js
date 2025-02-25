@@ -1,16 +1,22 @@
-import { createContext, useContext } from 'react';
-import { QueryClient, QueryClientProvider, useMutation } from '@tanstack/react-query';
-import { fetchBuildTypedData, fetchExecuteTransaction, BASE_URL, SEPOLIA_BASE_URL } from '@avnu/gasless-sdk';
-import { RpcProvider, Account, stark, ec, CairoCustomEnum, CairoOption, CairoOptionVariant, CallData, hash, num, cairo } from 'starknet';
-import CryptoJS from 'crypto-js';
-import { jsx } from 'react/jsx-runtime';
+'use strict';
+
+var react = require('react');
+var reactQuery = require('@tanstack/react-query');
+var gaslessSdk = require('@avnu/gasless-sdk');
+var starknet = require('starknet');
+var CryptoJS = require('crypto-js');
+var jsxRuntime = require('react/jsx-runtime');
+
+function _interopDefault (e) { return e && e.__esModule ? e : { default: e }; }
+
+var CryptoJS__default = /*#__PURE__*/_interopDefault(CryptoJS);
 
 // src/react/context/chipi-provider.tsx
 var encryptPrivateKey = (privateKey, password) => {
   if (!privateKey || !password) {
     throw new Error("Private key and password are required");
   }
-  return CryptoJS.AES.encrypt(privateKey, password).toString();
+  return CryptoJS__default.default.AES.encrypt(privateKey, password).toString();
 };
 var decryptPrivateKey = (encryptedPrivateKey, password) => {
   if (!encryptedPrivateKey || !password) {
@@ -18,8 +24,8 @@ var decryptPrivateKey = (encryptedPrivateKey, password) => {
     return null;
   }
   try {
-    const bytes = CryptoJS.AES.decrypt(encryptedPrivateKey, password);
-    const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+    const bytes = CryptoJS__default.default.AES.decrypt(encryptedPrivateKey, password);
+    const decrypted = bytes.toString(CryptoJS__default.default.enc.Utf8);
     if (!decrypted) {
       return null;
     }
@@ -42,15 +48,15 @@ var executePaymasterTransaction = async (params) => {
     if (!privateKeyDecrypted) {
       throw new Error("Failed to decrypt private key");
     }
-    const provider = new RpcProvider({
+    const provider = new starknet.RpcProvider({
       nodeUrl: rpcUrl
     });
-    const accountAX = new Account(
+    const accountAX = new starknet.Account(
       provider,
       wallet.publicKey,
       privateKeyDecrypted
     );
-    const typeData = await fetchBuildTypedData(
+    const typeData = await gaslessSdk.fetchBuildTypedData(
       wallet.publicKey,
       calls,
       void 0,
@@ -58,7 +64,7 @@ var executePaymasterTransaction = async (params) => {
       options
     );
     const userSignature = await accountAX.signMessage(typeData);
-    const executeTransaction = await fetchExecuteTransaction(
+    const executeTransaction = await gaslessSdk.fetchExecuteTransaction(
       wallet.publicKey,
       JSON.stringify(typeData),
       userSignature,
@@ -75,30 +81,30 @@ var createArgentWallet = async (params) => {
   try {
     const { encryptKey, apiKey, network, rpcUrl } = params;
     const options = {
-      baseUrl: network === "mainnet" ? BASE_URL : SEPOLIA_BASE_URL,
+      baseUrl: network === "mainnet" ? gaslessSdk.BASE_URL : gaslessSdk.SEPOLIA_BASE_URL,
       apiKey
     };
-    const provider = new RpcProvider({
+    const provider = new starknet.RpcProvider({
       nodeUrl: rpcUrl
     });
-    const privateKeyAX = stark.randomAddress();
-    const starkKeyPubAX = ec.starkCurve.getStarkKey(privateKeyAX);
+    const privateKeyAX = starknet.stark.randomAddress();
+    const starkKeyPubAX = starknet.ec.starkCurve.getStarkKey(privateKeyAX);
     const accountClassHash = params.argentClassHash;
-    const axSigner = new CairoCustomEnum({
+    const axSigner = new starknet.CairoCustomEnum({
       Starknet: { pubkey: starkKeyPubAX }
     });
-    const axGuardian = new CairoOption(CairoOptionVariant.None);
-    const AXConstructorCallData = CallData.compile({
+    const axGuardian = new starknet.CairoOption(starknet.CairoOptionVariant.None);
+    const AXConstructorCallData = starknet.CallData.compile({
       owner: axSigner,
       guardian: axGuardian
     });
-    const contractAddress = hash.calculateContractAddressFromHash(
+    const contractAddress = starknet.hash.calculateContractAddressFromHash(
       starkKeyPubAX,
       accountClassHash,
       AXConstructorCallData,
       0
     );
-    const account = new Account(provider, contractAddress, privateKeyAX);
+    const account = new starknet.Account(provider, contractAddress, privateKeyAX);
     console.log("Account ", { ...account });
     const initialValue = [
       {
@@ -108,22 +114,22 @@ var createArgentWallet = async (params) => {
         // , cairo.felt("Hello, from Chipi SDK!")
       }
     ];
-    const typeData = await fetchBuildTypedData(
+    const typeData = await gaslessSdk.fetchBuildTypedData(
       contractAddress,
       initialValue,
       void 0,
       void 0,
-      { baseUrl: BASE_URL, apiKey: options.apiKey },
+      { baseUrl: gaslessSdk.BASE_URL, apiKey: options.apiKey },
       accountClassHash
     );
     const userSignature = await account.signMessage(typeData);
     const deploymentData = {
       class_hash: accountClassHash,
       salt: starkKeyPubAX,
-      unique: `${num.toHex(0)}`,
-      calldata: AXConstructorCallData.map((value) => num.toHex(value))
+      unique: `${starknet.num.toHex(0)}`,
+      calldata: AXConstructorCallData.map((value) => starknet.num.toHex(value))
     };
-    const executeTransaction = await fetchExecuteTransaction(
+    const executeTransaction = await gaslessSdk.fetchExecuteTransaction(
       contractAddress,
       JSON.stringify(typeData),
       userSignature,
@@ -162,7 +168,7 @@ var createArgentWallet = async (params) => {
 var ChipiSDK = class {
   constructor(config) {
     this.options = {
-      baseUrl: BASE_URL,
+      baseUrl: gaslessSdk.BASE_URL,
       apiKey: config.apiKey
     };
     this.apiKey = config.apiKey;
@@ -174,7 +180,7 @@ var ChipiSDK = class {
   }
   formatAmount(amount, decimals = 18) {
     const amountBN = typeof amount === "string" ? BigInt(amount) * BigInt(10 ** decimals) : BigInt(amount) * BigInt(10 ** decimals);
-    return cairo.uint256(amountBN);
+    return starknet.cairo.uint256(amountBN);
   }
   async executeTransaction(input) {
     return executePaymasterTransaction({
@@ -281,8 +287,8 @@ var ChipiSDK = class {
     });
   }
 };
-var ChipiContext = createContext(null);
-var queryClient = new QueryClient();
+var ChipiContext = react.createContext(null);
+var queryClient = new reactQuery.QueryClient();
 function ChipiProvider({
   children,
   config
@@ -298,10 +304,10 @@ function ChipiProvider({
     activateContractAddress: config.activateContractAddress,
     activateContractEntryPoint: config.activateContractEntryPoint
   });
-  return /* @__PURE__ */ jsx(ChipiContext.Provider, { value: { config, chipiSDK }, children: /* @__PURE__ */ jsx(QueryClientProvider, { client: queryClient, children }) });
+  return /* @__PURE__ */ jsxRuntime.jsx(ChipiContext.Provider, { value: { config, chipiSDK }, children: /* @__PURE__ */ jsxRuntime.jsx(reactQuery.QueryClientProvider, { client: queryClient, children }) });
 }
 function useChipiContext() {
-  const context = useContext(ChipiContext);
+  const context = react.useContext(ChipiContext);
   if (!context) {
     throw new Error("useChipiContext must be used within a ChipiProvider");
   }
@@ -309,7 +315,7 @@ function useChipiContext() {
 }
 function useCreateWallet() {
   const { chipiSDK } = useChipiContext();
-  const mutation = useMutation({
+  const mutation = reactQuery.useMutation({
     mutationFn: (encryptKey) => chipiSDK.createWallet(encryptKey)
   });
   return {
@@ -322,7 +328,7 @@ function useCreateWallet() {
 }
 function useTransfer() {
   const { chipiSDK } = useChipiContext();
-  const mutation = useMutation({
+  const mutation = reactQuery.useMutation({
     mutationFn: (params) => chipiSDK.transfer(params)
   });
   return {
@@ -335,53 +341,67 @@ function useTransfer() {
 }
 function useApprove() {
   const { chipiSDK } = useChipiContext();
-  const mutation = useMutation({
+  const mutation = reactQuery.useMutation({
     mutationFn: (params) => chipiSDK.approve(params)
   });
   return {
     approve: mutation.mutate,
     approveAsync: mutation.mutateAsync,
+    approveData: mutation.data,
     isLoading: mutation.isPending,
     isError: mutation.isError
   };
 }
 function useStake() {
   const { chipiSDK } = useChipiContext();
-  const mutation = useMutation({
+  const mutation = reactQuery.useMutation({
     mutationFn: (params) => chipiSDK.stake(params)
   });
   return {
     stake: mutation.mutate,
     stakeAsync: mutation.mutateAsync,
+    stakeData: mutation.data,
     isLoading: mutation.isPending,
     isError: mutation.isError
   };
 }
 function useWithdraw() {
   const { chipiSDK } = useChipiContext();
-  const mutation = useMutation({
+  const mutation = reactQuery.useMutation({
     mutationFn: (params) => chipiSDK.withdraw(params)
   });
   return {
     withdraw: mutation.mutate,
     withdrawAsync: mutation.mutateAsync,
+    withdrawData: mutation.data,
     isLoading: mutation.isPending,
     isError: mutation.isError
   };
 }
 function useCallAnyContract() {
   const { chipiSDK } = useChipiContext();
-  const mutation = useMutation({
+  const mutation = reactQuery.useMutation({
     mutationFn: (params) => chipiSDK.callAnyContract(params)
   });
   return {
     callAnyContract: mutation.mutate,
     callAnyContractAsync: mutation.mutateAsync,
+    callAnyContractData: mutation.data,
     isLoading: mutation.isPending,
     isError: mutation.isError
   };
 }
 
-export { ChipiProvider, ChipiSDK, createArgentWallet, executePaymasterTransaction, useApprove, useCallAnyContract, useChipiContext, useCreateWallet, useStake, useTransfer, useWithdraw };
-//# sourceMappingURL=chunk-J25AKORV.mjs.map
-//# sourceMappingURL=chunk-J25AKORV.mjs.map
+exports.ChipiProvider = ChipiProvider;
+exports.ChipiSDK = ChipiSDK;
+exports.createArgentWallet = createArgentWallet;
+exports.executePaymasterTransaction = executePaymasterTransaction;
+exports.useApprove = useApprove;
+exports.useCallAnyContract = useCallAnyContract;
+exports.useChipiContext = useChipiContext;
+exports.useCreateWallet = useCreateWallet;
+exports.useStake = useStake;
+exports.useTransfer = useTransfer;
+exports.useWithdraw = useWithdraw;
+//# sourceMappingURL=chunk-TDDQ2HKR.js.map
+//# sourceMappingURL=chunk-TDDQ2HKR.js.map

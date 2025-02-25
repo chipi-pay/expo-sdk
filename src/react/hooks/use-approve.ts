@@ -17,6 +17,7 @@ export function useApprove() {
   return {
     approve: mutation.mutate,
     approveAsync: mutation.mutateAsync,
+    approveData: mutation.data,
     isLoading: mutation.isPending,
     isError: mutation.isError,
   };

@@ -13,6 +13,7 @@ export function useCallAnyContract() {
   return {
     callAnyContract: mutation.mutate,
     callAnyContractAsync: mutation.mutateAsync,
+    callAnyContractData: mutation.data,
     isLoading: mutation.isPending,
     isError: mutation.isError,
   };

@@ -163,6 +163,7 @@ declare function useTransfer(): {
 declare function useApprove(): {
     approve: _tanstack_react_query.UseMutateFunction<string, Error, ApproveParams, unknown>;
     approveAsync: _tanstack_react_query.UseMutateAsyncFunction<string, Error, ApproveParams, unknown>;
+    approveData: string | undefined;
     isLoading: boolean;
     isError: boolean;
 };
@@ -170,6 +171,7 @@ declare function useApprove(): {
 declare function useStake(): {
     stake: _tanstack_react_query.UseMutateFunction<string, Error, StakeParams, unknown>;
     stakeAsync: _tanstack_react_query.UseMutateAsyncFunction<string, Error, StakeParams, unknown>;
+    stakeData: string | undefined;
     isLoading: boolean;
     isError: boolean;
 };
@@ -177,6 +179,7 @@ declare function useStake(): {
 declare function useWithdraw(): {
     withdraw: _tanstack_react_query.UseMutateFunction<string, Error, WithdrawParams, unknown>;
     withdrawAsync: _tanstack_react_query.UseMutateAsyncFunction<string, Error, WithdrawParams, unknown>;
+    withdrawData: string | undefined;
     isLoading: boolean;
     isError: boolean;
 };
@@ -184,6 +187,7 @@ declare function useWithdraw(): {
 declare function useCallAnyContract(): {
     callAnyContract: _tanstack_react_query.UseMutateFunction<string, Error, CallAnyContractParams, unknown>;
     callAnyContractAsync: _tanstack_react_query.UseMutateAsyncFunction<string, Error, CallAnyContractParams, unknown>;
+    callAnyContractData: string | undefined;
     isLoading: boolean;
     isError: boolean;
 };

@@ -15,6 +15,7 @@ export function useStake() {
   return {
     stake: mutation.mutate,
     stakeAsync: mutation.mutateAsync,
+    stakeData: mutation.data,
     isLoading: mutation.isPending,
     isError: mutation.isError,
   };

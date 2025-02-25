@@ -1,40 +1,40 @@
 'use strict';
 
-var chunkMWKS75N6_js = require('../chunk-MWKS75N6.js');
+var chunkTDDQ2HKR_js = require('../chunk-TDDQ2HKR.js');
 
 
 
 Object.defineProperty(exports, "ChipiProvider", {
   enumerable: true,
-  get: function () { return chunkMWKS75N6_js.ChipiProvider; }
+  get: function () { return chunkTDDQ2HKR_js.ChipiProvider; }
 });
 Object.defineProperty(exports, "useApprove", {
   enumerable: true,
-  get: function () { return chunkMWKS75N6_js.useApprove; }
+  get: function () { return chunkTDDQ2HKR_js.useApprove; }
 });
 Object.defineProperty(exports, "useCallAnyContract", {
   enumerable: true,
-  get: function () { return chunkMWKS75N6_js.useCallAnyContract; }
+  get: function () { return chunkTDDQ2HKR_js.useCallAnyContract; }
 });
 Object.defineProperty(exports, "useChipiContext", {
   enumerable: true,
-  get: function () { return chunkMWKS75N6_js.useChipiContext; }
+  get: function () { return chunkTDDQ2HKR_js.useChipiContext; }
 });
 Object.defineProperty(exports, "useCreateWallet", {
   enumerable: true,
-  get: function () { return chunkMWKS75N6_js.useCreateWallet; }
+  get: function () { return chunkTDDQ2HKR_js.useCreateWallet; }
 });
 Object.defineProperty(exports, "useStake", {
   enumerable: true,
-  get: function () { return chunkMWKS75N6_js.useStake; }
+  get: function () { return chunkTDDQ2HKR_js.useStake; }
 });
 Object.defineProperty(exports, "useTransfer", {
   enumerable: true,
-  get: function () { return chunkMWKS75N6_js.useTransfer; }
+  get: function () { return chunkTDDQ2HKR_js.useTransfer; }
 });
 Object.defineProperty(exports, "useWithdraw", {
   enumerable: true,
-  get: function () { return chunkMWKS75N6_js.useWithdraw; }
+  get: function () { return chunkTDDQ2HKR_js.useWithdraw; }
 });
 //# sourceMappingURL=index.js.map
 //# sourceMappingURL=index.js.map

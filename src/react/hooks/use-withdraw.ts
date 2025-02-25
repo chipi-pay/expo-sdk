@@ -15,6 +15,7 @@ export function useWithdraw() {
   return {
     withdraw: mutation.mutate,
     withdrawAsync: mutation.mutateAsync,
+    withdrawData: mutation.data,
     isLoading: mutation.isPending,
     isError: mutation.isError,
   };
