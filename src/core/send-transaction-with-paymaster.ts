@@ -14,15 +14,13 @@ export interface ExecuteTransactionParams {
   }; //ClerkWallet;
   contractAddress: string;
   calls: Call[];
-  rpcUrl: string;
-  options: GaslessOptions;
 }
 
 export const executePaymasterTransaction = async (
   params: ExecuteTransactionParams
 ): Promise<string> => {
   try {
-    const { encryptKey, wallet, calls, rpcUrl, options } = params;
+    const { encryptKey, wallet, calls } = params;
     console.log("Params: ", params);
     // Fetch the encrypted private key from clerk public metadata
     const privateKeyDecrypted = decryptPrivateKey(
@@ -35,7 +33,7 @@ export const executePaymasterTransaction = async (
     }
 
     const provider = new RpcProvider({
-      nodeUrl: rpcUrl,
+      nodeUrl: "https://cloud.argent-api.com/v1/starknet/mainnet/rpc/v0.7",
     });
 
     const accountAX = new Account(
@@ -45,26 +43,28 @@ export const executePaymasterTransaction = async (
     );
 
     // Build the type data
-    const typeData = await fetchBuildTypedData(
+    // TODO: Call to the API to get the type data
+    const typeData = {} /*await fetchBuildTypedData(
       wallet.publicKey,
       calls,
       undefined,
       undefined,
       options
-    );
+    ); */
 
     // Sign the message
     const userSignature = await accountAX.signMessage(typeData);
 
     // Execute the transaction
-    const executeTransaction = await fetchExecuteTransaction(
+    // TODO: Call to the API to execute the transaction
+    /* const executeTransaction = await fetchExecuteTransaction(
       wallet.publicKey,
       JSON.stringify(typeData),
       userSignature,
       options
-    );
+    ); */
 
-    return executeTransaction.transactionHash;
+    return "0x1234567890abcdef"; //executeTransaction.transactionHash;
   } catch (error) {
     console.error("Error sending transaction with paymaster", error);
     throw error;
