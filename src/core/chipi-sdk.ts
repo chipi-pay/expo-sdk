@@ -18,10 +18,12 @@ import { CreateWalletResponse } from "./types";
 
 export class ChipiSDK {
   private apiKey: string;
+  private secretKey: string;
   private appId: string;
 
   constructor(config: ChipiSDKConfig) {
     this.apiKey = config.apiKey;
+    this.secretKey = config.secretKey;
     this.appId = config.appId;
   }
 
@@ -126,7 +128,9 @@ export class ChipiSDK {
     return createArgentWallet({
       encryptKey: encryptKey,
       apiKey: this.apiKey,
+      secretKey: this.secretKey,
       appId: this.appId,
+      nodeUrl: "https://starknet-mainnet.public.blastapi.io/rpc/v0_7",
     });
   }
 }

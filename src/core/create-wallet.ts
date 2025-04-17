@@ -21,7 +21,7 @@ export const createArgentWallet = async (
 
   // console.log("create wallet Params: ", params);
   try {
-    const { encryptKey, apiKey, appId, nodeUrl } = params;
+    const { encryptKey, apiKey, secretKey, appId, nodeUrl } = params;
    
     const provider = new RpcProvider({ nodeUrl: nodeUrl });
     // Generating the private key with Stark Curve
@@ -56,15 +56,16 @@ export const createArgentWallet = async (
     // console.log("Account ", { ...account });
 
     // Backend Call API to create the wallet
-    const typeDataResponse = await fetch("http://localhost:3000/chipi-wallets/prepare-creation", {
+    const typeDataResponse = await fetch("https://chipi-back-production.up.railway.app/chipi-wallets/prepare-creation", {
       method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${secretKey}`,
+        'X-API-Key': apiKey,
       },
       body: JSON.stringify({
         publicKey: contractAddress,
         appId: appId,
-        apiKey: apiKey,
       }),
     });
     const { typeData, accountClassHash: accountClassHashResponse } = await typeDataResponse.json();
@@ -86,10 +87,12 @@ export const createArgentWallet = async (
     // console.log("Encrypted private key: ", encryptedPrivateKey);
 
     // Llamar a la API para guardar la wallet en dashboard
-    const executeTransactionResponse = await fetch("http://localhost:3000/chipi-wallets", {
+    const executeTransactionResponse = await fetch("https://chipi-back-production.up.railway.app/chipi-wallets", {
       method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${secretKey}`,
+        'X-API-Key': apiKey,
       },
       body: JSON.stringify({
         publicKey: `${contractAddress}`,

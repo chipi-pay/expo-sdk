@@ -1,6 +1,7 @@
 import { Call } from "starknet";
 export interface ChipiSDKConfig {
   apiKey: string;
+  secretKey: string;
   appId: string;
 }
 
@@ -55,6 +56,7 @@ export interface CreateWalletParams {
   appId: string;
   encryptKey: string;
   apiKey: string;
+  secretKey: string;
   nodeUrl: string;
 }
 

@@ -8,6 +8,8 @@ import { decryptPrivateKey } from "./lib/encryption";
 
 export interface ExecuteTransactionParams {
   encryptKey: string;
+  secretKey: string;
+  apiKey: string;
   wallet: {
     publicKey: string;
     encryptedPrivateKey: string;
@@ -20,7 +22,7 @@ export const executePaymasterTransaction = async (
   params: ExecuteTransactionParams
 ): Promise<string> => {
   try {
-    const { encryptKey, wallet, calls } = params;
+    const { encryptKey, wallet, calls, secretKey, apiKey } = params;
     console.log("Params: ", params);
     // Fetch the encrypted private key from clerk public metadata
     const privateKeyDecrypted = decryptPrivateKey(
@@ -36,7 +38,7 @@ export const executePaymasterTransaction = async (
       nodeUrl: "https://cloud.argent-api.com/v1/starknet/mainnet/rpc/v0.7",
     });
 
-    const accountAX = new Account(
+    const account = new Account(
       provider,
       wallet.publicKey,
       privateKeyDecrypted
@@ -44,7 +46,26 @@ export const executePaymasterTransaction = async (
 
     // Build the type data
     // TODO: Call to the API to get the type data
-    const typeData = {} /*await fetchBuildTypedData(
+    const typeDataResponse = await fetch("https://chipi-back-production.up.railway.app/transactions", {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${secretKey}`,
+        'X-API-Key': apiKey,
+      },
+      body: JSON.stringify({
+        wallet: wallet.publicKey,
+        calls: calls,
+      }),
+    });
+    const { typeData, accountClassHash: accountClassHashResponse } = await typeDataResponse.json(); 
+    
+
+    // console.log("Type data: ", typeData);
+    // Sign the message
+    const userSignature = await account.signMessage(typeData);
+    console.log("User signature: ", userSignature);
+    /*await fetchBuildTypedData(
       wallet.publicKey,
       calls,
       undefined,
@@ -52,9 +73,7 @@ export const executePaymasterTransaction = async (
       options
     ); */
 
-    // Sign the message
-    const userSignature = await accountAX.signMessage(typeData);
-
+   
     // Execute the transaction
     // TODO: Call to the API to execute the transaction
     /* const executeTransaction = await fetchExecuteTransaction(
