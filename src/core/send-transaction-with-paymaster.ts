@@ -54,11 +54,12 @@ export const executePaymasterTransaction = async (
         'X-API-Key': apiKey,
       },
       body: JSON.stringify({
-        wallet: wallet.publicKey,
+        publicKey: wallet.publicKey,
         calls: calls,
+        accountClassHash: "0x036078334509b514626504edc9fb252328d1a240e4e948bef8d0c08dff45927f"
       }),
     });
-    const { typeData, accountClassHash: accountClassHashResponse } = await typeDataResponse.json(); 
+    const { typeData } = await typeDataResponse.json(); 
     
 
     // console.log("Type data: ", typeData);
@@ -84,14 +85,20 @@ export const executePaymasterTransaction = async (
         'X-API-Key': apiKey,
       },
       body: JSON.stringify({
-        wallet: wallet.publicKey,
+        publicKey: wallet.publicKey,
         typeData: typeData,
-        userSignature: userSignature,
+        userSignature: {
+          r: (userSignature as any).r.toString(),
+          s: (userSignature as any).s.toString(),
+          recovery: (userSignature as any).recovery
+        },
+        // appId: params.appId
       }),
     });
 
     console.log("Execute transaction: ", executeTransaction);
-    return "0x1234567890abcdef"; //executeTransaction.transactionHash;
+    const result = await executeTransaction.json();
+    return result.transactionHash;
   } catch (error) {
     console.error("Error sending transaction with paymaster", error);
     throw error;
