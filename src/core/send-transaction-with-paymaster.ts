@@ -46,7 +46,7 @@ export const executePaymasterTransaction = async (
 
     // Build the type data
     // TODO: Call to the API to get the type data
-    const typeDataResponse = await fetch("https://chipi-back-production.up.railway.app/transactions", {
+    const typeDataResponse = await fetch("https://chipi-back-production.up.railway.app/transactions/prepare-typed-data", {
       method: "POST",
       headers: {
         'Content-Type': 'application/json',
@@ -76,13 +76,21 @@ export const executePaymasterTransaction = async (
    
     // Execute the transaction
     // TODO: Call to the API to execute the transaction
-    /* const executeTransaction = await fetchExecuteTransaction(
-      wallet.publicKey,
-      JSON.stringify(typeData),
-      userSignature,
-      options
-    ); */
+    const executeTransaction = await fetch("https://chipi-back-production.up.railway.app/transactions/execute-sponsored-transaction", {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${secretKey}`,
+        'X-API-Key': apiKey,
+      },
+      body: JSON.stringify({
+        wallet: wallet.publicKey,
+        typeData: typeData,
+        userSignature: userSignature,
+      }),
+    });
 
+    console.log("Execute transaction: ", executeTransaction);
     return "0x1234567890abcdef"; //executeTransaction.transactionHash;
   } catch (error) {
     console.error("Error sending transaction with paymaster", error);
