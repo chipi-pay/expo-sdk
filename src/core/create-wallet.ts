@@ -49,7 +49,7 @@ export const createArgentWallet = async (
       AXConstructorCallData,
       0
     );
-    console.log("Contract address: ", contractAddress);
+    // console.log("Contract address: ", contractAddress);
    
     // Initiating Account
     const account = new Account(provider, contractAddress, privateKeyAX);

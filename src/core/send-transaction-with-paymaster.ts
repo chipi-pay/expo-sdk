@@ -1,8 +1,3 @@
-import {
-  fetchBuildTypedData,
-  fetchExecuteTransaction,
-  GaslessOptions,
-} from "@avnu/gasless-sdk";
 import { Account, Call, RpcProvider } from "starknet";
 import { decryptPrivateKey } from "./lib/encryption";
 
@@ -14,15 +9,15 @@ export interface ExecuteTransactionParams {
     publicKey: string;
     encryptedPrivateKey: string;
   }; //ClerkWallet;
-  contractAddress: string;
   calls: Call[];
+  appId: string;
 }
 
 export const executePaymasterTransaction = async (
   params: ExecuteTransactionParams
 ): Promise<string> => {
   try {
-    const { encryptKey, wallet, calls, secretKey, apiKey } = params;
+    const { encryptKey, wallet, calls, secretKey, apiKey, appId } = params;
     console.log("Params: ", params);
     // Fetch the encrypted private key from clerk public metadata
     const privateKeyDecrypted = decryptPrivateKey(
@@ -59,24 +54,22 @@ export const executePaymasterTransaction = async (
         accountClassHash: "0x036078334509b514626504edc9fb252328d1a240e4e948bef8d0c08dff45927f"
       }),
     });
-    const { typeData } = await typeDataResponse.json(); 
-    
 
-    // console.log("Type data: ", typeData);
+    if (!typeDataResponse.ok) {
+      const errorText = await typeDataResponse.text();
+      throw new Error(`Error en la API: ${errorText}`);
+    }
+
+    const typeData = await typeDataResponse.json();
+    // console.log('Type data recibido:', typeData.Calls);
+
     // Sign the message
     const userSignature = await account.signMessage(typeData);
-    console.log("User signature: ", userSignature);
-    /*await fetchBuildTypedData(
-      wallet.publicKey,
-      calls,
-      undefined,
-      undefined,
-      options
-    ); */
+    //console.log("User signature: ", userSignature);
+
 
    
     // Execute the transaction
-    // TODO: Call to the API to execute the transaction
     const executeTransaction = await fetch("https://chipi-back-production.up.railway.app/transactions/execute-sponsored-transaction", {
       method: "POST",
       headers: {
@@ -92,12 +85,22 @@ export const executePaymasterTransaction = async (
           s: (userSignature as any).s.toString(),
           recovery: (userSignature as any).recovery
         },
-        // appId: params.appId
+        appId: appId
       }),
     });
 
-    console.log("Execute transaction: ", executeTransaction);
+    if (!executeTransaction.ok) {
+      const errorText = await executeTransaction.text();
+      throw new Error(`Error en la API de ejecución: ${errorText}`);
+    }
+
     const result = await executeTransaction.json();
+    // console.log('Resultado de la transacción:', result);
+    
+    if (!result.transactionHash) {
+      throw new Error('La respuesta no contiene el hash de la transacción');
+    }
+
     return result.transactionHash;
   } catch (error) {
     console.error("Error sending transaction with paymaster", error);
