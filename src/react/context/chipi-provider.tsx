@@ -4,12 +4,8 @@ import { ChipiSDK } from '../../core/chipi-sdk';
 
 export interface ChipiSDKConfig {
   apiKey: string;
-  rpcUrl: string;
-  network: "mainnet" | "sepolia";
-  activateContractAddress?: string;
-  argentClassHash?: string;
-  activateContractEntryPoint?: string;
-  // Add other config options here as needed
+  secretKey: string;
+  appId: string;
 }
 
 interface ChipiContextValue {
@@ -27,17 +23,14 @@ export function ChipiProvider({
   children: React.ReactNode;
   config: ChipiSDKConfig;
 }) {
-  if (!config.apiKey) {
-    throw new Error('Chipi SDK requires an API key');
+  if (!config.apiKey || !config.secretKey || !config.appId) {
+    throw new Error('Chipi SDK apiKey, secretKey and appId are required');
   }
 
   const chipiSDK = new ChipiSDK({
     apiKey: config.apiKey,
-    rpcUrl: config.rpcUrl,
-    network: config.network,
-    argentClassHash: config.argentClassHash,
-    activateContractAddress: config.activateContractAddress,
-    activateContractEntryPoint: config.activateContractEntryPoint,
+    secretKey: config.secretKey,
+    appId: config.appId,
   });
 
   return (

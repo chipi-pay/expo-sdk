@@ -52,6 +52,14 @@ export interface CallAnyContractParams {
   contractAddress: string;
   calls: Call[];
 }
+
+export interface ExecuteTransactionParams {
+  encryptKey: string;
+  wallet: WalletData;
+  contractAddress: string;
+  calls: Call[];
+}
+
 export interface CreateWalletParams {
   appId: string;
   encryptKey: string;
@@ -65,7 +73,6 @@ export interface CreateWalletResponse {
   wallet: WalletData;
   txHash: string;
 }
-
 
 export interface IncrementParams {}
 export type TransactionParams =

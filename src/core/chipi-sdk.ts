@@ -20,13 +20,13 @@ export class ChipiSDK {
   private apiKey: string;
   private secretKey: string;
   private appId: string;
+  private readonly nodeUrl = "https://starknet-mainnet.public.blastapi.io/rpc/v0_7";
 
   constructor(config: ChipiSDKConfig) {
     this.apiKey = config.apiKey;
     this.secretKey = config.secretKey;
     this.appId = config.appId;
   }
-
 
   private formatAmount(amount: string | number, decimals: number = 18): Uint256 {
     const amountStr = amount.toString();
@@ -37,13 +37,16 @@ export class ChipiSDK {
     return cairo.uint256(amountBN);
   }
 
-  async executeTransaction(input: ExecuteTransactionParams): Promise<string> {
+  async executeTransaction(input: Omit<ExecuteTransactionParams, 'apiKey' | 'secretKey' | 'appId'>): Promise<string> {
     return executePaymasterTransaction({
       ...input,
+      apiKey: this.apiKey,
+      secretKey: this.secretKey,
+      appId: this.appId,
     });
   }
 
-  async transfer(params: TransferParams): Promise<string> {
+  async transfer(params: Omit<TransferParams, 'apiKey' | 'secretKey' | 'appId'>): Promise<string> {
     return this.executeTransaction({
       encryptKey: params.encryptKey,
       wallet: params.wallet,
@@ -61,7 +64,7 @@ export class ChipiSDK {
     });
   }
 
-  async approve(params: ApproveParams): Promise<string> {
+  async approve(params: Omit<ApproveParams, 'apiKey' | 'secretKey' | 'appId'>): Promise<string> {
     return this.executeTransaction({
       encryptKey: params.encryptKey,
       wallet: params.wallet,
@@ -79,7 +82,7 @@ export class ChipiSDK {
     });
   }
 
-  async stake(params: StakeParams): Promise<string> {
+  async stake(params: Omit<StakeParams, 'apiKey' | 'secretKey' | 'appId'>): Promise<string> {
     return this.executeTransaction({
       encryptKey: params.encryptKey,
       wallet: params.wallet,
@@ -97,7 +100,7 @@ export class ChipiSDK {
     });
   }
 
-  async withdraw(params: WithdrawParams): Promise<string> {
+  async withdraw(params: Omit<WithdrawParams, 'apiKey' | 'secretKey' | 'appId'>): Promise<string> {
     return this.executeTransaction({
       encryptKey: params.encryptKey,
       wallet: params.wallet,
@@ -115,7 +118,7 @@ export class ChipiSDK {
     });
   }
 
-  async callAnyContract(params: CallAnyContractParams): Promise<string> {
+  async callAnyContract(params: Omit<CallAnyContractParams, 'apiKey' | 'secretKey' | 'appId'>): Promise<string> {
     return this.executeTransaction({
       encryptKey: params.encryptKey,
       wallet: params.wallet,
@@ -130,7 +133,7 @@ export class ChipiSDK {
       apiKey: this.apiKey,
       secretKey: this.secretKey,
       appId: this.appId,
-      nodeUrl: "https://starknet-mainnet.public.blastapi.io/rpc/v0_7",
+      nodeUrl: this.nodeUrl,
     });
   }
 }
