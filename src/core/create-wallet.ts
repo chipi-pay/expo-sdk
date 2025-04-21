@@ -1,14 +1,6 @@
-import type { DeploymentData, GaslessOptions } from "@avnu/gasless-sdk";
-import {
-  BASE_URL,
-  SEPOLIA_BASE_URL,
-  fetchBuildTypedData,
-  fetchExecuteTransaction,
-} from "@avnu/gasless-sdk";
-import type { Call } from "starknet";
+import type { DeploymentData } from "@avnu/gasless-sdk";
 import {
   Account,
-  cairo,
   CairoCustomEnum,
   CairoOption,
   CairoOptionVariant,
@@ -24,29 +16,21 @@ import { CreateWalletParams, CreateWalletResponse, WalletData } from "./types";
 
 
 export const createArgentWallet = async (
-  params: CreateWalletParams
-): Promise<CreateWalletResponse> => {
+   params: CreateWalletParams
+): Promise<any> => {
 
-  console.log("create wallet Params: ", params);
+  // console.log("create wallet Params: ", params);
   try {
-    const { encryptKey, apiKey, network, rpcUrl } = params;
-
-    const options: GaslessOptions = {
-      baseUrl: network === "mainnet" ? BASE_URL : SEPOLIA_BASE_URL,
-      apiKey,
-    };
-    const provider = new RpcProvider({
-      nodeUrl: rpcUrl,
-    });
-
+    const { encryptKey, apiKey, secretKey, appId, nodeUrl } = params;
+   
+    const provider = new RpcProvider({ nodeUrl: nodeUrl });
     // Generating the private key with Stark Curve
     const privateKeyAX = stark.randomAddress();
     const starkKeyPubAX = ec.starkCurve.getStarkKey(privateKeyAX);
 
     // Using Argent X Account v0.4.0 class hash
-    // POR REVISAR: CLASSHASH ES EL MISMO EN MAINNET?
-    const accountClassHash = params.argentClassHash;
-
+    const accountClassHash = "0x036078334509b514626504edc9fb252328d1a240e4e948bef8d0c08dff45927f" //params.argentClassHash;
+  
     // Calculate future address of the ArgentX account
     const axSigner = new CairoCustomEnum({
       Starknet: { pubkey: starkKeyPubAX },
@@ -65,62 +49,78 @@ export const createArgentWallet = async (
       AXConstructorCallData,
       0
     );
-
+    // console.log("Contract address: ", contractAddress);
+   
     // Initiating Account
     const account = new Account(provider, contractAddress, privateKeyAX);
-    console.log("Account ", { ...account });
+    // console.log("Account ", { ...account });
 
-    // Ping to activate the account
-    const initialValue: Call[] = [
-      {
-        contractAddress: params.activateContractAddress,
-        entrypoint: params.activateContractEntryPoint,
-        calldata: [contractAddress], // , cairo.felt("Hello, from Chipi SDK!")
+    // Backend Call API to create the wallet
+    const typeDataResponse = await fetch("https://chipi-back-production.up.railway.app/chipi-wallets/prepare-creation", {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${secretKey}`,
+        'X-API-Key': apiKey,
       },
-    ];
+      body: JSON.stringify({
+        publicKey: contractAddress,
+        appId: appId,
+      }),
+    });
+    const { typeData, accountClassHash: accountClassHashResponse } = await typeDataResponse.json();
 
-    const typeData = await fetchBuildTypedData(
-      contractAddress,
-      initialValue,
-      undefined,
-      undefined,
-      { baseUrl: BASE_URL, apiKey: options.apiKey },
-      accountClassHash
-    );
-
+    // console.log("Type data: ", typeData);
+    // Sign the message
     const userSignature = await account.signMessage(typeData);
 
+    // console.log("User signature: ", userSignature);
     const deploymentData: DeploymentData = {
-      class_hash: accountClassHash,
+      class_hash: accountClassHashResponse,
       salt: starkKeyPubAX,
       unique: `${num.toHex(0)}`,
       calldata: AXConstructorCallData.map((value) => num.toHex(value)),
     };
 
-    const executeTransaction = await fetchExecuteTransaction(
-      contractAddress,
-      JSON.stringify(typeData),
-      userSignature,
-      options,
-      deploymentData
-    );
-
+    // console.log("Deployment data: ------ ", deploymentData);
     const encryptedPrivateKey = encryptPrivateKey(privateKeyAX, encryptKey);
-    console.log("Encrypted private key: ", encryptedPrivateKey);
+    // console.log("Encrypted private key: ", encryptedPrivateKey);
 
-    // TODO: Guardar la wallet en dashboard
-    console.log(
-      "Wallet created successfully with txHash: ",
-      executeTransaction.transactionHash
-    );
-    console.log("Account address: ", contractAddress);
+    // Llamar a la API para guardar la wallet en dashboard
+    const executeTransactionResponse = await fetch("https://chipi-back-production.up.railway.app/chipi-wallets", {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${secretKey}`,
+        'X-API-Key': apiKey,
+      },
+      body: JSON.stringify({
+        publicKey: `${contractAddress}`,
+        userSignature: {
+          r: (userSignature as any).r.toString(),
+          s: (userSignature as any).s.toString(),
+          recovery: (userSignature as any).recovery
+        },
+        typeData,
+        appId: appId,
+        encryptedPrivateKey,
+        deploymentData: {
+          ...deploymentData,
+          salt: `${deploymentData.salt}`,
+          calldata: deploymentData.calldata.map(data => `${data}`),
+        }
+      }),
+    });
+    const executeTransaction = await executeTransactionResponse.json();
+    // console.log("Execute transaction: ", executeTransaction);
+
     return {
       success: true,
+      txHash: executeTransaction.txHash,
       wallet: {
-        publicKey: contractAddress,
-        encryptedPrivateKey,
+        publicKey: executeTransaction.publicKey,
+        privateKeyEncrypted: encryptedPrivateKey,
       },
-      txHash: executeTransaction.transactionHash,
     };
   } catch (error: unknown) {
     console.error("Error detallado:", error);
@@ -138,3 +138,4 @@ export const createArgentWallet = async (
     );
   }
 };
+

@@ -1,11 +1,8 @@
 import { Call } from "starknet";
 export interface ChipiSDKConfig {
   apiKey: string;
-  rpcUrl: string;
-  argentClassHash?: string;
-  activateContractAddress?: string;
-  activateContractEntryPoint?: string;
-  network: "mainnet" | "sepolia";
+  secretKey: string;
+  appId: string;
 }
 
 export interface WalletData {
@@ -56,13 +53,11 @@ export interface CallAnyContractParams {
   calls: Call[];
 }
 export interface CreateWalletParams {
+  appId: string;
   encryptKey: string;
   apiKey: string;
-  network: "mainnet" | "sepolia";
-  rpcUrl: string;
-  argentClassHash: string;
-  activateContractAddress: string;
-  activateContractEntryPoint: string;
+  secretKey: string;
+  nodeUrl: string;
 }
 
 export interface CreateWalletResponse {

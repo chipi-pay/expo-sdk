@@ -1,28 +1,23 @@
-import {
-  fetchBuildTypedData,
-  fetchExecuteTransaction,
-  GaslessOptions,
-} from "@avnu/gasless-sdk";
 import { Account, Call, RpcProvider } from "starknet";
 import { decryptPrivateKey } from "./lib/encryption";
 
 export interface ExecuteTransactionParams {
   encryptKey: string;
+  secretKey: string;
+  apiKey: string;
   wallet: {
     publicKey: string;
     encryptedPrivateKey: string;
   }; //ClerkWallet;
-  contractAddress: string;
   calls: Call[];
-  rpcUrl: string;
-  options: GaslessOptions;
+  appId: string;
 }
 
 export const executePaymasterTransaction = async (
   params: ExecuteTransactionParams
 ): Promise<string> => {
   try {
-    const { encryptKey, wallet, calls, rpcUrl, options } = params;
+    const { encryptKey, wallet, calls, secretKey, apiKey, appId } = params;
     console.log("Params: ", params);
     // Fetch the encrypted private key from clerk public metadata
     const privateKeyDecrypted = decryptPrivateKey(
@@ -35,36 +30,78 @@ export const executePaymasterTransaction = async (
     }
 
     const provider = new RpcProvider({
-      nodeUrl: rpcUrl,
+      nodeUrl: "https://cloud.argent-api.com/v1/starknet/mainnet/rpc/v0.7",
     });
 
-    const accountAX = new Account(
+    const account = new Account(
       provider,
       wallet.publicKey,
       privateKeyDecrypted
     );
 
     // Build the type data
-    const typeData = await fetchBuildTypedData(
-      wallet.publicKey,
-      calls,
-      undefined,
-      undefined,
-      options
-    );
+    // TODO: Call to the API to get the type data
+    const typeDataResponse = await fetch("https://chipi-back-production.up.railway.app/transactions/prepare-typed-data", {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${secretKey}`,
+        'X-API-Key': apiKey,
+      },
+      body: JSON.stringify({
+        publicKey: wallet.publicKey,
+        calls: calls,
+        accountClassHash: "0x036078334509b514626504edc9fb252328d1a240e4e948bef8d0c08dff45927f"
+      }),
+    });
+
+    if (!typeDataResponse.ok) {
+      const errorText = await typeDataResponse.text();
+      throw new Error(`Error en la API: ${errorText}`);
+    }
+
+    const typeData = await typeDataResponse.json();
+    // console.log('Type data recibido:', typeData.Calls);
 
     // Sign the message
-    const userSignature = await accountAX.signMessage(typeData);
+    const userSignature = await account.signMessage(typeData);
+    //console.log("User signature: ", userSignature);
 
+
+   
     // Execute the transaction
-    const executeTransaction = await fetchExecuteTransaction(
-      wallet.publicKey,
-      JSON.stringify(typeData),
-      userSignature,
-      options
-    );
+    const executeTransaction = await fetch("https://chipi-back-production.up.railway.app/transactions/execute-sponsored-transaction", {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${secretKey}`,
+        'X-API-Key': apiKey,
+      },
+      body: JSON.stringify({
+        publicKey: wallet.publicKey,
+        typeData: typeData,
+        userSignature: {
+          r: (userSignature as any).r.toString(),
+          s: (userSignature as any).s.toString(),
+          recovery: (userSignature as any).recovery
+        },
+        appId: appId
+      }),
+    });
 
-    return executeTransaction.transactionHash;
+    if (!executeTransaction.ok) {
+      const errorText = await executeTransaction.text();
+      throw new Error(`Error en la API de ejecución: ${errorText}`);
+    }
+
+    const result = await executeTransaction.json();
+    // console.log('Resultado de la transacción:', result);
+    
+    if (!result.transactionHash) {
+      throw new Error('La respuesta no contiene el hash de la transacción');
+    }
+
+    return result.transactionHash;
   } catch (error) {
     console.error("Error sending transaction with paymaster", error);
     throw error;

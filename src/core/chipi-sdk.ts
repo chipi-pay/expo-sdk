@@ -1,4 +1,3 @@
-import { BASE_URL, GaslessOptions } from "@avnu/gasless-sdk";
 import { cairo, type Call, type Uint256 } from "starknet";
 import {
   executePaymasterTransaction,
@@ -15,34 +14,19 @@ import type {
   WithdrawParams,
 } from "./types";
 import { createArgentWallet } from "./create-wallet";
-import { CreateWalletResponse } from ".";
+import { CreateWalletResponse } from "./types";
 
 export class ChipiSDK {
-  private options: GaslessOptions;
-  private rpcUrl: string;
   private apiKey: string;
-  private argentClassHash: string;
-  private activateContractAddress: string;
-  private activateContractEntryPoint: string;
-  private network: "mainnet" | "sepolia";
+  private secretKey: string;
+  private appId: string;
 
   constructor(config: ChipiSDKConfig) {
-    this.options = {
-      baseUrl: BASE_URL,
-      apiKey: config.apiKey,
-    };
     this.apiKey = config.apiKey;
-    this.network = config.network;
-    this.rpcUrl = config.rpcUrl;
-    this.argentClassHash =
-      config.argentClassHash ||
-      "0x036078334509b514626504edc9fb252328d1a240e4e948bef8d0c08dff45927f";
-    this.activateContractAddress =
-      config.activateContractAddress ||
-      "0x0425fe282af8a0fce7478e06d21295fe85e57447f4f5127f80a04ef2eb6291fd";
-    this.activateContractEntryPoint =
-      config.activateContractEntryPoint || "set_greeting";
+    this.secretKey = config.secretKey;
+    this.appId = config.appId;
   }
+
 
   private formatAmount(amount: string | number, decimals: number = 18): Uint256 {
     const amountStr = amount.toString();
@@ -56,8 +40,6 @@ export class ChipiSDK {
   async executeTransaction(input: ExecuteTransactionParams): Promise<string> {
     return executePaymasterTransaction({
       ...input,
-      rpcUrl: this.rpcUrl,
-      options: this.options,
     });
   }
 
@@ -66,8 +48,6 @@ export class ChipiSDK {
       encryptKey: params.encryptKey,
       wallet: params.wallet,
       contractAddress: params.contractAddress,
-      rpcUrl: this.rpcUrl,
-      options: this.options,
       calls: [
         {
           contractAddress: params.contractAddress,
@@ -86,8 +66,6 @@ export class ChipiSDK {
       encryptKey: params.encryptKey,
       wallet: params.wallet,
       contractAddress: params.contractAddress,
-      rpcUrl: this.rpcUrl,
-      options: this.options,
       calls: [
         {
           contractAddress: params.contractAddress,
@@ -106,8 +84,6 @@ export class ChipiSDK {
       encryptKey: params.encryptKey,
       wallet: params.wallet,
       contractAddress: params.contractAddress,
-      rpcUrl: this.rpcUrl,
-      options: this.options,
       calls: [
         {
           contractAddress: params.contractAddress,
@@ -126,8 +102,6 @@ export class ChipiSDK {
       encryptKey: params.encryptKey,
       wallet: params.wallet,
       contractAddress: params.contractAddress,
-      rpcUrl: this.rpcUrl,
-      options: this.options,
       calls: [
         {
           contractAddress: params.contractAddress,
@@ -147,20 +121,16 @@ export class ChipiSDK {
       wallet: params.wallet,
       contractAddress: params.contractAddress,
       calls: params.calls,
-      rpcUrl: this.rpcUrl,
-      options: this.options,
     });
   }
 
   async createWallet(encryptKey: string): Promise<CreateWalletResponse> {
     return createArgentWallet({
       encryptKey: encryptKey,
-      rpcUrl: this.rpcUrl,
-      argentClassHash: this.argentClassHash,
-      activateContractAddress: this.activateContractAddress,
-      activateContractEntryPoint: this.activateContractEntryPoint,
       apiKey: this.apiKey,
-      network: this.network,
+      secretKey: this.secretKey,
+      appId: this.appId,
+      nodeUrl: "https://starknet-mainnet.public.blastapi.io/rpc/v0_7",
     });
   }
 }
