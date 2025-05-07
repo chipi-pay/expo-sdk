@@ -50,7 +50,6 @@ export class ChipiSDK {
     return this.executeTransaction({
       encryptKey: params.encryptKey,
       wallet: params.wallet,
-      contractAddress: params.contractAddress,
       calls: [
         {
           contractAddress: params.contractAddress,
@@ -68,7 +67,6 @@ export class ChipiSDK {
     return this.executeTransaction({
       encryptKey: params.encryptKey,
       wallet: params.wallet,
-      contractAddress: params.contractAddress,
       calls: [
         {
           contractAddress: params.contractAddress,
@@ -86,7 +84,6 @@ export class ChipiSDK {
     return this.executeTransaction({
       encryptKey: params.encryptKey,
       wallet: params.wallet,
-      contractAddress: params.contractAddress,
       calls: [
         {
           contractAddress: params.contractAddress,
@@ -104,7 +101,6 @@ export class ChipiSDK {
     return this.executeTransaction({
       encryptKey: params.encryptKey,
       wallet: params.wallet,
-      contractAddress: params.contractAddress,
       calls: [
         {
           contractAddress: params.contractAddress,
@@ -122,7 +118,6 @@ export class ChipiSDK {
     return this.executeTransaction({
       encryptKey: params.encryptKey,
       wallet: params.wallet,
-      contractAddress: params.contractAddress,
       calls: params.calls,
     });
   }
