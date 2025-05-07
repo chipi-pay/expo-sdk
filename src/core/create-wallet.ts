@@ -17,7 +17,7 @@ import { CreateWalletParams, CreateWalletResponse, WalletData } from "./types";
 
 export const createArgentWallet = async (
    params: CreateWalletParams
-): Promise<any> => {
+): Promise<CreateWalletResponse> => {
 
   // console.log("create wallet Params: ", params);
   try {
@@ -119,8 +119,8 @@ export const createArgentWallet = async (
       txHash: executeTransaction.txHash,
       wallet: {
         publicKey: executeTransaction.publicKey,
-        privateKeyEncrypted: encryptedPrivateKey,
-      },
+        encryptedPrivateKey: encryptedPrivateKey,
+      } as WalletData,
     };
   } catch (error: unknown) {
     console.error("Error detallado:", error);

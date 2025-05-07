@@ -24,7 +24,8 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "ts-node src/core/create-wallet.ts"
   },
   "peerDependencies": {
     "@tanstack/react-query": ">=4.0.0",
