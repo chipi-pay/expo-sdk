@@ -15,12 +15,17 @@ https://chipi-sdk-clerk-demo.vercel.app/
 
 ## Installation
 
+### Create an Org in the Dashboard
+
+https://dashboard.chipipay.com/
+
 ```bash
 npm install @chipi-pay/chipi-sdk
 
 # Add your API keys to the environment variables
-NEXT_PUBLIC_AVNU_API_KEY=tu_api_key_aqui
-NEXT_PUBLIC_INFURA_API_KEY=tu_infura_key_aqui
+NEXT_PUBLIC_CHIPI_PUBLIC_KEY=your_public_key
+NEXT_PUBLIC_CHIPI_APP_ID=your_app_id
+CHIPI_SECRET_KEY=your_secret_key
 ```
 
 ## Getting Started
@@ -31,21 +36,21 @@ NEXT_PUBLIC_INFURA_API_KEY=tu_infura_key_aqui
 // Initialize SDK
 import { ChipiProvider } from "@chipi-pay/chipi-sdk";
 
-const AVNU_API_KEY = process.env.NEXT_PUBLIC_AVNU_API_KEY!;
-const INFURA_API_KEY = process.env.NEXT_PUBLIC_INFURA_API_KEY!;
+const CHIPI_PUBLIC_KEY = process.env.NEXT_PUBLIC_CHIPI_PUBLIC_KEY!;
+const CHIPI_APP_ID = process.env.NEXT_PUBLIC_CHIPI_APP_ID!;
+const CHIPI_SECRET_KEY = process.env.CHIPI_SECRET_KEY!;
 
-if (!AVNU_API_KEY || !INFURA_API_KEY) {
-  throw new Error("AVNU_API_KEY or INFURA_API_KEY is not set");
+if (!CHIPI_PUBLIC_KEY || !CHIPI_APP_ID || !CHIPI_SECRET_KEY) {
+  throw new Error("Some Key is not set");
 }
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ChipiProvider
       config={{
-        apiKey: AVNU_API_KEY,
-        rpcUrl:
-          `https://starknet-mainnet.infura.io/v3/${INFURA_API_KEY}`,
-        network: "mainnet",
+        apiKey: "CHIPI_PUBLIC_KEY",
+        secretKey: "CHIPI_SECRET_KEY",
+        appId: "CHIPI_APP_ID"
       }}
     >
       {children}
@@ -71,8 +76,8 @@ export default function Home() {
   const { transferAsync } = useTransfer();
 
 
-  const handleCreateWallet = async (pin: string) => {
-    const response = await createWalletAsync(pin);
+  const handleCreateWallet = async (encryptKey: string) => { // PIN 01234
+    const response = await createWalletAsync(encryptKey);
     console.log("creation response", response);
     alert("Wallet created");
   };
@@ -92,6 +97,12 @@ export default function Home() {
   );
 }
 ```
+
+## API
+
+If you need to do something more customized, you can check our API
+
+https://chipi-back-production.up.railway.app/api
 
 ## Types
 
