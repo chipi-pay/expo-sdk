@@ -8,8 +8,8 @@ import { TransferParams } from "../../core";
 export function useTransfer() {
   const { chipiSDK } = useChipiContext();
 
-  const mutation = useMutation({
-    mutationFn: (params: TransferParams) => chipiSDK.transfer(params),
+  const mutation = useMutation<string, Error, Omit<TransferParams, 'apiPublicKey'>>({
+    mutationFn: chipiSDK.transfer,
   });
 
   return {

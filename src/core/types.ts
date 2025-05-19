@@ -1,8 +1,6 @@
 import { Call } from "starknet";
 export interface ChipiSDKConfig {
-  apiKey: string;
-  secretKey: string;
-  appId: string;
+  apiPublicKey: string;
 }
 
 export interface WalletData {
@@ -17,6 +15,7 @@ export interface TransferParams {
   recipient: string;
   amount: string | number;
   decimals?: number;
+  bearerToken: string;
 }
 
 export interface ApproveParams {
@@ -26,6 +25,7 @@ export interface ApproveParams {
   spender: string;
   amount: string | number;
   decimals?: number;
+  bearerToken: string;
 }
 
 export interface StakeParams {
@@ -35,6 +35,7 @@ export interface StakeParams {
   amount: string | number;
   recipient: string;
   decimals?: number;
+  bearerToken: string;
 }
 
 export interface WithdrawParams {
@@ -44,6 +45,7 @@ export interface WithdrawParams {
   contractAddress: string;
   amount: string | number;
   decimals?: number;
+  bearerToken: string;
 }
 
 export interface CallAnyContractParams {
@@ -51,6 +53,7 @@ export interface CallAnyContractParams {
   wallet: WalletData;
   contractAddress: string;
   calls: Call[];
+  bearerToken: string;
 }
 
 export interface ExecuteTransactionParams {
@@ -58,13 +61,13 @@ export interface ExecuteTransactionParams {
   wallet: WalletData;
   contractAddress: string;
   calls: Call[];
+  bearerToken: string;
 }
 
 export interface CreateWalletParams {
-  appId: string;
   encryptKey: string;
-  apiKey: string;
-  secretKey: string;
+  apiPublicKey: string;
+  bearerToken: string;
   nodeUrl: string;
 }
 

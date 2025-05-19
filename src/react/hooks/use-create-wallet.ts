@@ -1,13 +1,13 @@
 import { useMutation } from "@tanstack/react-query";
 import { useChipiContext } from "../context";
-import {  CreateWalletResponse } from "../../core";
+import {  CreateWalletParams, CreateWalletResponse } from "../../core";
 
 
 export function useCreateWallet() {
   const { chipiSDK } = useChipiContext();
 
-  const mutation = useMutation<CreateWalletResponse, Error, string>({
-    mutationFn: (encryptKey: string) => chipiSDK.createWallet(encryptKey),
+  const mutation = useMutation<CreateWalletResponse, Error, Omit<CreateWalletParams, 'apiPublicKey'>>({
+    mutationFn: chipiSDK.createWallet,
   });
 
   return {

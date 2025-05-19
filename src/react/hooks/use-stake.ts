@@ -8,8 +8,8 @@ import { StakeParams } from "../../core";
 export function useStake() {
   const { chipiSDK } = useChipiContext();
 
-  const mutation = useMutation({
-    mutationFn: (params: StakeParams) => chipiSDK.stake(params),
+  const mutation = useMutation<string, Error, Omit<StakeParams, 'apiPublicKey'>>({
+    mutationFn: chipiSDK.stake,
   });
 
   return {

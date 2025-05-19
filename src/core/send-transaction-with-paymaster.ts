@@ -1,23 +1,23 @@
 import { Account, Call, RpcProvider } from "starknet";
 import { decryptPrivateKey } from "./lib/encryption";
+import { BACKEND_URL } from "./backend-url";
 
 export interface ExecuteTransactionParams {
+  apiPublicKey: string;
   encryptKey: string;
-  secretKey: string;
-  apiKey: string;
+  bearerToken: string;
   wallet: {
     publicKey: string;
     encryptedPrivateKey: string;
   }; //ClerkWallet;
   calls: Call[];
-  appId: string;
 }
 
 export const executePaymasterTransaction = async (
   params: ExecuteTransactionParams
 ): Promise<string> => {
   try {
-    const { encryptKey, wallet, calls, secretKey, apiKey, appId } = params;
+    const { encryptKey, wallet, calls, apiPublicKey, bearerToken } = params;
     console.log("Params: ", params);
     // Fetch the encrypted private key from clerk public metadata
     const privateKeyDecrypted = decryptPrivateKey(
@@ -41,12 +41,12 @@ export const executePaymasterTransaction = async (
 
     // Build the type data
     // TODO: Call to the API to get the type data
-    const typeDataResponse = await fetch("https://chipi-back-production.up.railway.app/transactions/prepare-typed-data", {
+    const typeDataResponse = await fetch(`${BACKEND_URL}/transactions/prepare-typed-data`, {
       method: "POST",
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${secretKey}`,
-        'X-API-Key': apiKey,
+        'Authorization': `Bearer ${bearerToken}`,
+        'X-API-Key': apiPublicKey,
       },
       body: JSON.stringify({
         publicKey: wallet.publicKey,
@@ -70,12 +70,12 @@ export const executePaymasterTransaction = async (
 
    
     // Execute the transaction
-    const executeTransaction = await fetch("https://chipi-back-production.up.railway.app/transactions/execute-sponsored-transaction", {
+    const executeTransaction = await fetch(`${BACKEND_URL}/transactions/execute-sponsored-transaction`, {
       method: "POST",
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${secretKey}`,
-        'X-API-Key': apiKey,
+        'Authorization': `Bearer ${bearerToken}`,
+        'X-API-Key': apiPublicKey,
       },
       body: JSON.stringify({
         publicKey: wallet.publicKey,
@@ -84,8 +84,7 @@ export const executePaymasterTransaction = async (
           r: (userSignature as any).r.toString(),
           s: (userSignature as any).s.toString(),
           recovery: (userSignature as any).recovery
-        },
-        appId: appId
+        }
       }),
     });
 
