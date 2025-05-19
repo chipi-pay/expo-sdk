@@ -112,16 +112,27 @@ export const createArgentWallet = async (
       }),
     });
     const executeTransaction = await executeTransactionResponse.json();
-    // console.log("Execute transaction: ", executeTransaction);
+    console.log("Execute transaction: ", executeTransaction);
 
+    if (executeTransaction.success) {
     return {
       success: true,
       txHash: executeTransaction.txHash,
       wallet: {
-        publicKey: executeTransaction.wallet,
+        publicKey: contractAddress,
         encryptedPrivateKey: encryptedPrivateKey,
       } as WalletData,
-    };
+      };
+    } else {
+      return {
+        success: false,
+        txHash: "",
+        wallet: {
+          publicKey: "",
+          encryptedPrivateKey: "",
+        } as WalletData,
+      };
+    }
   } catch (error: unknown) {
     console.error("Error detallado:", error);
 
