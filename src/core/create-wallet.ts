@@ -113,12 +113,13 @@ export const createArgentWallet = async (
     });
     const executeTransaction = await executeTransactionResponse.json();
     // console.log("Execute transaction: ", executeTransaction);
-
+    const pubkey = await executeTransaction.publicKey;
+    
     return {
       success: true,
       txHash: executeTransaction.txHash,
       wallet: {
-        publicKey: executeTransaction.publicKey,
+        publicKey: pubkey,
         encryptedPrivateKey: encryptedPrivateKey,
       } as WalletData,
     };
@@ -138,4 +139,3 @@ export const createArgentWallet = async (
     );
   }
 };
-
