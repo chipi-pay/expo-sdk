@@ -113,8 +113,8 @@ export const createArgentWallet = async (
     });
     const executeTransaction = await executeTransactionResponse.json();
     // console.log("Execute transaction: ", executeTransaction);
-    const pubkey = await executeTransaction.publicKey;
-    
+    const pubkey = await executeTransaction.wallet;
+
     return {
       success: true,
       txHash: executeTransaction.txHash,
