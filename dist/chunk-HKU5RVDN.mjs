@@ -168,14 +168,26 @@ var createArgentWallet = async (params) => {
       })
     });
     const executeTransaction = await executeTransactionResponse.json();
-    return {
-      success: true,
-      txHash: executeTransaction.txHash,
-      wallet: {
-        publicKey: executeTransaction.publicKey,
-        encryptedPrivateKey
-      }
-    };
+    console.log("Execute transaction: ", executeTransaction);
+    if (executeTransaction.success) {
+      return {
+        success: true,
+        txHash: executeTransaction.txHash,
+        wallet: {
+          publicKey: contractAddress,
+          encryptedPrivateKey
+        }
+      };
+    } else {
+      return {
+        success: false,
+        txHash: "",
+        wallet: {
+          publicKey: "",
+          encryptedPrivateKey: ""
+        }
+      };
+    }
   } catch (error) {
     console.error("Error detallado:", error);
     if (error instanceof Error && error.message.includes("SSL")) {
@@ -319,7 +331,20 @@ function useChipiContext() {
 function useCreateWallet() {
   const { chipiSDK } = useChipiContext();
   const mutation = useMutation({
-    mutationFn: (encryptKey) => chipiSDK.createWallet(encryptKey)
+    mutationFn: async (encryptKey) => {
+      const response = await chipiSDK.createWallet(encryptKey);
+      if (!response || !response.wallet) {
+        throw new Error("Invalid response from SDK");
+      }
+      return {
+        success: response.success,
+        txHash: response.txHash,
+        wallet: {
+          publicKey: typeof response.wallet === "string" ? response.wallet : response.wallet.publicKey,
+          encryptedPrivateKey: response.wallet.encryptedPrivateKey
+        }
+      };
+    }
   });
   return {
     createWallet: mutation.mutate,
@@ -396,5 +421,5 @@ function useCallAnyContract() {
 }
 
 export { ChipiProvider, ChipiSDK, createArgentWallet, executePaymasterTransaction, useApprove, useCallAnyContract, useChipiContext, useCreateWallet, useStake, useTransfer, useWithdraw };
-//# sourceMappingURL=chunk-LSOG45ZH.mjs.map
-//# sourceMappingURL=chunk-LSOG45ZH.mjs.map
+//# sourceMappingURL=chunk-HKU5RVDN.mjs.map
+//# sourceMappingURL=chunk-HKU5RVDN.mjs.map

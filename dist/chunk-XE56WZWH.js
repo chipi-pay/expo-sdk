@@ -174,14 +174,26 @@ var createArgentWallet = async (params) => {
       })
     });
     const executeTransaction = await executeTransactionResponse.json();
-    return {
-      success: true,
-      txHash: executeTransaction.txHash,
-      wallet: {
-        publicKey: executeTransaction.publicKey,
-        encryptedPrivateKey
-      }
-    };
+    console.log("Execute transaction: ", executeTransaction);
+    if (executeTransaction.success) {
+      return {
+        success: true,
+        txHash: executeTransaction.txHash,
+        wallet: {
+          publicKey: contractAddress,
+          encryptedPrivateKey
+        }
+      };
+    } else {
+      return {
+        success: false,
+        txHash: "",
+        wallet: {
+          publicKey: "",
+          encryptedPrivateKey: ""
+        }
+      };
+    }
   } catch (error) {
     console.error("Error detallado:", error);
     if (error instanceof Error && error.message.includes("SSL")) {
@@ -325,7 +337,20 @@ function useChipiContext() {
 function useCreateWallet() {
   const { chipiSDK } = useChipiContext();
   const mutation = reactQuery.useMutation({
-    mutationFn: (encryptKey) => chipiSDK.createWallet(encryptKey)
+    mutationFn: async (encryptKey) => {
+      const response = await chipiSDK.createWallet(encryptKey);
+      if (!response || !response.wallet) {
+        throw new Error("Invalid response from SDK");
+      }
+      return {
+        success: response.success,
+        txHash: response.txHash,
+        wallet: {
+          publicKey: typeof response.wallet === "string" ? response.wallet : response.wallet.publicKey,
+          encryptedPrivateKey: response.wallet.encryptedPrivateKey
+        }
+      };
+    }
   });
   return {
     createWallet: mutation.mutate,
@@ -412,5 +437,5 @@ exports.useCreateWallet = useCreateWallet;
 exports.useStake = useStake;
 exports.useTransfer = useTransfer;
 exports.useWithdraw = useWithdraw;
-//# sourceMappingURL=chunk-IST6N67M.js.map
-//# sourceMappingURL=chunk-IST6N67M.js.map
+//# sourceMappingURL=chunk-XE56WZWH.js.map
+//# sourceMappingURL=chunk-XE56WZWH.js.map
