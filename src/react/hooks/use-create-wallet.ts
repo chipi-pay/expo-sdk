@@ -6,7 +6,7 @@ import {  CreateWalletParams, CreateWalletResponse } from "../../core";
 export function useCreateWallet() {
   const { chipiSDK } = useChipiContext();
 
-  const mutation = useMutation<CreateWalletResponse, Error, Omit<CreateWalletParams, 'apiPublicKey'>>({
+  const mutation = useMutation<CreateWalletResponse, Error, Omit<CreateWalletParams, 'apiPublicKey' | 'nodeUrl'>>({
     mutationFn: chipiSDK.createWallet,
   });
 

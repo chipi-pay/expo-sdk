@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useMemo } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ChipiSDK } from "../../core/chipi-sdk";
 
@@ -25,13 +25,21 @@ export function ChipiProvider({
     throw new Error("Chipi SDK apiPublicKey is required");
   }
 
-  const chipiSDK = new ChipiSDK({
-    apiPublicKey: config.apiPublicKey,
-  });
+  const chipiSDK = useMemo(() => {
+    console.log("Creating new ChipiSDK instance with apiPublicKey:", config.apiPublicKey);
+    return new ChipiSDK({
+      apiPublicKey: config.apiPublicKey,
+    });
+  }, [config.apiPublicKey]);
+
+  const contextValue = useMemo(() => ({
+    config,
+    chipiSDK,
+  }), [config, chipiSDK]);
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ChipiContext.Provider value={{ config, chipiSDK }}>
+      <ChipiContext.Provider value={contextValue}>
         {children}
       </ChipiContext.Provider>
     </QueryClientProvider>

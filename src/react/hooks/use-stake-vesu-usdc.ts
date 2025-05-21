@@ -5,11 +5,11 @@ import { StakeParams } from "../../core";
 
 
 
-export function useStake() {
+export function useStakeVesuUsdc() {
   const { chipiSDK } = useChipiContext();
 
   const mutation = useMutation<string, Error, Omit<StakeParams, 'apiPublicKey'>>({
-    mutationFn: chipiSDK.stake,
+    mutationFn: chipiSDK.stakeVesuUsdc,
   });
 
   return {

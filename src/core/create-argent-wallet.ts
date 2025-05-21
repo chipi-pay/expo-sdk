@@ -57,12 +57,13 @@ export const createArgentWallet = async (
     // console.log("Account ", { ...account });
 
     // Backend Call API to create the wallet
+    console.log("apiPublicKey", apiPublicKey);
     const typeDataResponse = await fetch(`${BACKEND_URL}/chipi-wallets/prepare-creation`, {
       method: "POST",
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${bearerToken}`,
-        'X-API-Key': apiPublicKey,
+        'x-api-key': apiPublicKey,
       },
       body: JSON.stringify({
         publicKey,
@@ -92,9 +93,10 @@ export const createArgentWallet = async (
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${bearerToken}`,
-        'X-API-Key': apiPublicKey,
+        'x-api-key': apiPublicKey,
       },
       body: JSON.stringify({
+        apiPublicKey,
         publicKey,
         userSignature: {
           r: (userSignature as any).r.toString(),
@@ -117,7 +119,7 @@ export const createArgentWallet = async (
       success: true,
       txHash: executeTransaction.txHash,
       wallet: {
-        publicKey: executeTransaction.publicKey,
+        publicKey: executeTransaction.walletPublicKey,
         encryptedPrivateKey: encryptedPrivateKey,
       } as WalletData,
     };

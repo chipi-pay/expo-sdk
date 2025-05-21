@@ -35,10 +35,13 @@ var decryptPrivateKey = (encryptedPrivateKey, password) => {
   }
 };
 
+// src/core/backend-url.ts
+var BACKEND_URL = "http://localhost:3000";
+
 // src/core/send-transaction-with-paymaster.ts
 var executePaymasterTransaction = async (params) => {
   try {
-    const { encryptKey, wallet, calls, secretKey, apiKey, appId } = params;
+    const { encryptKey, wallet, calls, apiPublicKey, bearerToken } = params;
     console.log("Params: ", params);
     const privateKeyDecrypted = decryptPrivateKey(
       wallet.encryptedPrivateKey,
@@ -55,12 +58,12 @@ var executePaymasterTransaction = async (params) => {
       wallet.publicKey,
       privateKeyDecrypted
     );
-    const typeDataResponse = await fetch("https://chipi-back-production.up.railway.app/transactions/prepare-typed-data", {
+    const typeDataResponse = await fetch(`${BACKEND_URL}/transactions/prepare-typed-data`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${secretKey}`,
-        "X-API-Key": apiKey
+        "Authorization": `Bearer ${bearerToken}`,
+        "X-API-Key": apiPublicKey
       },
       body: JSON.stringify({
         publicKey: wallet.publicKey,
@@ -74,12 +77,12 @@ var executePaymasterTransaction = async (params) => {
     }
     const typeData = await typeDataResponse.json();
     const userSignature = await account.signMessage(typeData);
-    const executeTransaction = await fetch("https://chipi-back-production.up.railway.app/transactions/execute-sponsored-transaction", {
+    const executeTransaction = await fetch(`${BACKEND_URL}/transactions/execute-sponsored-transaction`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${secretKey}`,
-        "X-API-Key": apiKey
+        "Authorization": `Bearer ${bearerToken}`,
+        "X-API-Key": apiPublicKey
       },
       body: JSON.stringify({
         publicKey: wallet.publicKey,
@@ -88,8 +91,7 @@ var executePaymasterTransaction = async (params) => {
           r: userSignature.r.toString(),
           s: userSignature.s.toString(),
           recovery: userSignature.recovery
-        },
-        appId
+        }
       })
     });
     if (!executeTransaction.ok) {
@@ -108,7 +110,7 @@ var executePaymasterTransaction = async (params) => {
 };
 var createArgentWallet = async (params) => {
   try {
-    const { encryptKey, apiKey, secretKey, appId, nodeUrl } = params;
+    const { encryptKey, apiPublicKey, bearerToken, nodeUrl } = params;
     const provider = new starknet.RpcProvider({ nodeUrl });
     const privateKeyAX = starknet.stark.randomAddress();
     const starkKeyPubAX = starknet.ec.starkCurve.getStarkKey(privateKeyAX);
@@ -121,23 +123,23 @@ var createArgentWallet = async (params) => {
       owner: axSigner,
       guardian: axGuardian
     });
-    const contractAddress = starknet.hash.calculateContractAddressFromHash(
+    const publicKey = starknet.hash.calculateContractAddressFromHash(
       starkKeyPubAX,
       accountClassHash,
       AXConstructorCallData,
       0
     );
-    const account = new starknet.Account(provider, contractAddress, privateKeyAX);
-    const typeDataResponse = await fetch("https://chipi-back-production.up.railway.app/chipi-wallets/prepare-creation", {
+    const account = new starknet.Account(provider, publicKey, privateKeyAX);
+    console.log("apiPublicKey", apiPublicKey);
+    const typeDataResponse = await fetch(`${BACKEND_URL}/chipi-wallets/prepare-creation`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${secretKey}`,
-        "X-API-Key": apiKey
+        "Authorization": `Bearer ${bearerToken}`,
+        "x-api-key": apiPublicKey
       },
       body: JSON.stringify({
-        publicKey: contractAddress,
-        appId
+        publicKey
       })
     });
     const { typeData, accountClassHash: accountClassHashResponse } = await typeDataResponse.json();
@@ -149,22 +151,22 @@ var createArgentWallet = async (params) => {
       calldata: AXConstructorCallData.map((value) => starknet.num.toHex(value))
     };
     const encryptedPrivateKey = encryptPrivateKey(privateKeyAX, encryptKey);
-    const executeTransactionResponse = await fetch("https://chipi-back-production.up.railway.app/chipi-wallets", {
+    const executeTransactionResponse = await fetch(`${BACKEND_URL}/chipi-wallets`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${secretKey}`,
-        "X-API-Key": apiKey
+        "Authorization": `Bearer ${bearerToken}`,
+        "x-api-key": apiPublicKey
       },
       body: JSON.stringify({
-        publicKey: `${contractAddress}`,
+        apiPublicKey,
+        publicKey,
         userSignature: {
           r: userSignature.r.toString(),
           s: userSignature.s.toString(),
           recovery: userSignature.recovery
         },
         typeData,
-        appId,
         encryptedPrivateKey,
         deploymentData: {
           ...deploymentData,
@@ -178,7 +180,7 @@ var createArgentWallet = async (params) => {
       success: true,
       txHash: executeTransaction.txHash,
       wallet: {
-        publicKey: executeTransaction.publicKey,
+        publicKey: executeTransaction.walletPublicKey,
         encryptedPrivateKey
       }
     };
@@ -199,9 +201,14 @@ var createArgentWallet = async (params) => {
 var ChipiSDK = class {
   constructor(config) {
     this.nodeUrl = "https://starknet-mainnet.public.blastapi.io/rpc/v0_7";
-    this.apiKey = config.apiKey;
-    this.secretKey = config.secretKey;
-    this.appId = config.appId;
+    this.apiPublicKey = config.apiPublicKey;
+    this.executeTransaction = this.executeTransaction.bind(this);
+    this.transfer = this.transfer.bind(this);
+    this.approve = this.approve.bind(this);
+    this.stakeVesuUsdc = this.stakeVesuUsdc.bind(this);
+    this.withdraw = this.withdraw.bind(this);
+    this.callAnyContract = this.callAnyContract.bind(this);
+    this.createWallet = this.createWallet.bind(this);
   }
   formatAmount(amount, decimals = 18) {
     const amountStr = amount.toString();
@@ -213,88 +220,110 @@ var ChipiSDK = class {
   async executeTransaction(input) {
     return executePaymasterTransaction({
       ...input,
-      apiKey: this.apiKey,
-      secretKey: this.secretKey,
-      appId: this.appId
+      apiPublicKey: this.apiPublicKey
     });
   }
   async transfer(params) {
+    const { encryptKey, wallet, contractAddress, recipient, amount, decimals, bearerToken } = params;
+    console.log("transfer this format test", this.formatAmount(amount, decimals));
     return this.executeTransaction({
-      encryptKey: params.encryptKey,
-      wallet: params.wallet,
+      encryptKey,
+      wallet,
+      bearerToken,
       calls: [
         {
-          contractAddress: params.contractAddress,
+          contractAddress,
           entrypoint: "transfer",
           calldata: [
-            params.recipient,
-            this.formatAmount(params.amount, params.decimals)
+            recipient,
+            this.formatAmount(amount, decimals),
+            "0x0"
           ]
         }
       ]
     });
   }
   async approve(params) {
+    const { encryptKey, wallet, contractAddress, spender, amount, decimals, bearerToken } = params;
     return this.executeTransaction({
-      encryptKey: params.encryptKey,
-      wallet: params.wallet,
+      encryptKey,
+      wallet,
+      bearerToken,
       calls: [
         {
-          contractAddress: params.contractAddress,
+          contractAddress,
           entrypoint: "approve",
           calldata: [
-            params.spender,
-            this.formatAmount(params.amount, params.decimals)
+            spender,
+            this.formatAmount(amount, decimals),
+            "0x0"
           ]
         }
       ]
     });
   }
-  async stake(params) {
+  async stakeVesuUsdc(params) {
+    const { encryptKey, wallet, amount, receiverWallet, bearerToken } = params;
     return this.executeTransaction({
-      encryptKey: params.encryptKey,
-      wallet: params.wallet,
+      encryptKey,
+      wallet,
+      bearerToken,
       calls: [
         {
-          contractAddress: params.contractAddress,
+          contractAddress: "0x053c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8",
+          entrypoint: "approve",
+          calldata: [
+            "0x017f19582c61479f2fe0b6606300e975c0a8f439102f43eeecc1d0e9b3d84350",
+            this.formatAmount(amount, 6),
+            "0x0"
+          ]
+        },
+        {
+          contractAddress: "0x017f19582c61479f2fe0b6606300e975c0a8f439102f43eeecc1d0e9b3d84350",
           entrypoint: "deposit",
           calldata: [
-            this.formatAmount(params.amount, params.decimals),
-            params.recipient
+            this.formatAmount(amount, 6),
+            "0x0",
+            receiverWallet
           ]
         }
       ]
     });
   }
   async withdraw(params) {
+    const { encryptKey, wallet, contractAddress, amount, recipient, decimals, bearerToken } = params;
     return this.executeTransaction({
-      encryptKey: params.encryptKey,
-      wallet: params.wallet,
+      encryptKey,
+      wallet,
+      bearerToken,
       calls: [
         {
-          contractAddress: params.contractAddress,
+          contractAddress,
           entrypoint: "withdraw",
           calldata: [
-            this.formatAmount(params.amount, params.decimals),
-            params.recipient
+            this.formatAmount(amount, decimals),
+            recipient,
+            "0x0"
           ]
         }
       ]
     });
   }
   async callAnyContract(params) {
+    const { encryptKey, wallet, contractAddress, calls, bearerToken } = params;
     return this.executeTransaction({
-      encryptKey: params.encryptKey,
-      wallet: params.wallet,
-      calls: params.calls
+      encryptKey,
+      wallet,
+      bearerToken,
+      calls
     });
   }
-  async createWallet(encryptKey) {
+  async createWallet(params) {
+    const { encryptKey, bearerToken } = params;
     return createArgentWallet({
       encryptKey,
-      apiKey: this.apiKey,
-      secretKey: this.secretKey,
-      appId: this.appId,
+      apiPublicKey: this.apiPublicKey,
+      bearerToken,
       nodeUrl: this.nodeUrl
     });
   }
@@ -305,15 +334,20 @@ function ChipiProvider({
   children,
   config
 }) {
-  if (!config.apiKey || !config.secretKey || !config.appId) {
-    throw new Error("Chipi SDK apiKey, secretKey and appId are required");
+  if (!config.apiPublicKey) {
+    throw new Error("Chipi SDK apiPublicKey is required");
   }
-  const chipiSDK = new ChipiSDK({
-    apiKey: config.apiKey,
-    secretKey: config.secretKey,
-    appId: config.appId
-  });
-  return /* @__PURE__ */ jsxRuntime.jsx(ChipiContext.Provider, { value: { config, chipiSDK }, children: /* @__PURE__ */ jsxRuntime.jsx(reactQuery.QueryClientProvider, { client: queryClient, children }) });
+  const chipiSDK = react.useMemo(() => {
+    console.log("Creating new ChipiSDK instance with apiPublicKey:", config.apiPublicKey);
+    return new ChipiSDK({
+      apiPublicKey: config.apiPublicKey
+    });
+  }, [config.apiPublicKey]);
+  const contextValue = react.useMemo(() => ({
+    config,
+    chipiSDK
+  }), [config, chipiSDK]);
+  return /* @__PURE__ */ jsxRuntime.jsx(reactQuery.QueryClientProvider, { client: queryClient, children: /* @__PURE__ */ jsxRuntime.jsx(ChipiContext.Provider, { value: contextValue, children }) });
 }
 function useChipiContext() {
   const context = react.useContext(ChipiContext);
@@ -325,7 +359,7 @@ function useChipiContext() {
 function useCreateWallet() {
   const { chipiSDK } = useChipiContext();
   const mutation = reactQuery.useMutation({
-    mutationFn: (encryptKey) => chipiSDK.createWallet(encryptKey)
+    mutationFn: chipiSDK.createWallet
   });
   return {
     createWallet: mutation.mutate,
@@ -338,7 +372,7 @@ function useCreateWallet() {
 function useTransfer() {
   const { chipiSDK } = useChipiContext();
   const mutation = reactQuery.useMutation({
-    mutationFn: (params) => chipiSDK.transfer(params)
+    mutationFn: chipiSDK.transfer
   });
   return {
     transfer: mutation.mutate,
@@ -351,7 +385,7 @@ function useTransfer() {
 function useApprove() {
   const { chipiSDK } = useChipiContext();
   const mutation = reactQuery.useMutation({
-    mutationFn: (params) => chipiSDK.approve(params)
+    mutationFn: chipiSDK.approve
   });
   return {
     approve: mutation.mutate,
@@ -361,10 +395,10 @@ function useApprove() {
     isError: mutation.isError
   };
 }
-function useStake() {
+function useStakeVesuUsdc() {
   const { chipiSDK } = useChipiContext();
   const mutation = reactQuery.useMutation({
-    mutationFn: (params) => chipiSDK.stake(params)
+    mutationFn: chipiSDK.stakeVesuUsdc
   });
   return {
     stake: mutation.mutate,
@@ -377,7 +411,7 @@ function useStake() {
 function useWithdraw() {
   const { chipiSDK } = useChipiContext();
   const mutation = reactQuery.useMutation({
-    mutationFn: (params) => chipiSDK.withdraw(params)
+    mutationFn: chipiSDK.withdraw
   });
   return {
     withdraw: mutation.mutate,
@@ -390,7 +424,7 @@ function useWithdraw() {
 function useCallAnyContract() {
   const { chipiSDK } = useChipiContext();
   const mutation = reactQuery.useMutation({
-    mutationFn: (params) => chipiSDK.callAnyContract(params)
+    mutationFn: chipiSDK.callAnyContract
   });
   return {
     callAnyContract: mutation.mutate,
@@ -409,8 +443,8 @@ exports.useApprove = useApprove;
 exports.useCallAnyContract = useCallAnyContract;
 exports.useChipiContext = useChipiContext;
 exports.useCreateWallet = useCreateWallet;
-exports.useStake = useStake;
+exports.useStakeVesuUsdc = useStakeVesuUsdc;
 exports.useTransfer = useTransfer;
 exports.useWithdraw = useWithdraw;
-//# sourceMappingURL=chunk-IST6N67M.js.map
-//# sourceMappingURL=chunk-IST6N67M.js.map
+//# sourceMappingURL=chunk-JRG5IN3A.js.map
+//# sourceMappingURL=chunk-JRG5IN3A.js.map

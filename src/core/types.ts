@@ -31,10 +31,8 @@ export interface ApproveParams {
 export interface StakeParams {
   encryptKey: string;
   wallet: WalletData;
-  contractAddress: string;
   amount: string | number;
-  recipient: string;
-  decimals?: number;
+  receiverWallet: string;
   bearerToken: string;
 }
 

@@ -3,22 +3,19 @@ import { Call } from 'starknet';
 import * as _tanstack_react_query from '@tanstack/react-query';
 
 interface ExecuteTransactionParams$1 {
+    apiPublicKey: string;
     encryptKey: string;
-    secretKey: string;
-    apiKey: string;
+    bearerToken: string;
     wallet: {
         publicKey: string;
         encryptedPrivateKey: string;
     };
     calls: Call[];
-    appId: string;
 }
 declare const executePaymasterTransaction: (params: ExecuteTransactionParams$1) => Promise<string>;
 
 interface ChipiSDKConfig$1 {
-    apiKey: string;
-    secretKey: string;
-    appId: string;
+    apiPublicKey: string;
 }
 interface WalletData {
     publicKey: string;
@@ -31,6 +28,7 @@ interface TransferParams {
     recipient: string;
     amount: string | number;
     decimals?: number;
+    bearerToken: string;
 }
 interface ApproveParams {
     encryptKey: string;
@@ -39,14 +37,14 @@ interface ApproveParams {
     spender: string;
     amount: string | number;
     decimals?: number;
+    bearerToken: string;
 }
 interface StakeParams {
     encryptKey: string;
     wallet: WalletData;
-    contractAddress: string;
     amount: string | number;
-    recipient: string;
-    decimals?: number;
+    receiverWallet: string;
+    bearerToken: string;
 }
 interface WithdrawParams {
     encryptKey: string;
@@ -55,24 +53,26 @@ interface WithdrawParams {
     contractAddress: string;
     amount: string | number;
     decimals?: number;
+    bearerToken: string;
 }
 interface CallAnyContractParams {
     encryptKey: string;
     wallet: WalletData;
     contractAddress: string;
     calls: Call[];
+    bearerToken: string;
 }
 interface ExecuteTransactionParams {
     encryptKey: string;
     wallet: WalletData;
     contractAddress: string;
     calls: Call[];
+    bearerToken: string;
 }
 interface CreateWalletParams {
-    appId: string;
     encryptKey: string;
-    apiKey: string;
-    secretKey: string;
+    apiPublicKey: string;
+    bearerToken: string;
     nodeUrl: string;
 }
 interface CreateWalletResponse {
@@ -108,79 +108,75 @@ interface TransactionResult {
 }
 
 declare class ChipiSDK {
-    private apiKey;
-    private secretKey;
-    private appId;
+    private apiPublicKey;
     private readonly nodeUrl;
     constructor(config: ChipiSDKConfig$1);
     private formatAmount;
-    executeTransaction(input: Omit<ExecuteTransactionParams$1, 'apiKey' | 'secretKey' | 'appId'>): Promise<string>;
-    transfer(params: Omit<TransferParams, 'apiKey' | 'secretKey' | 'appId'>): Promise<string>;
-    approve(params: Omit<ApproveParams, 'apiKey' | 'secretKey' | 'appId'>): Promise<string>;
-    stake(params: Omit<StakeParams, 'apiKey' | 'secretKey' | 'appId'>): Promise<string>;
-    withdraw(params: Omit<WithdrawParams, 'apiKey' | 'secretKey' | 'appId'>): Promise<string>;
-    callAnyContract(params: Omit<CallAnyContractParams, 'apiKey' | 'secretKey' | 'appId'>): Promise<string>;
-    createWallet(encryptKey: string): Promise<CreateWalletResponse>;
+    executeTransaction(input: Omit<ExecuteTransactionParams$1, 'apiPublicKey'>): Promise<string>;
+    transfer(params: Omit<TransferParams, 'apiPublicKey'>): Promise<string>;
+    approve(params: Omit<ApproveParams, 'apiPublicKey'>): Promise<string>;
+    stakeVesuUsdc(params: Omit<StakeParams, 'apiPublicKey'>): Promise<string>;
+    withdraw(params: Omit<WithdrawParams, 'apiPublicKey'>): Promise<string>;
+    callAnyContract(params: Omit<CallAnyContractParams, 'apiPublicKey'>): Promise<string>;
+    createWallet(params: Omit<CreateWalletParams, 'apiPublicKey' | 'nodeUrl'>): Promise<CreateWalletResponse>;
 }
 
 interface ChipiSDKConfig {
-    apiKey: string;
-    secretKey: string;
-    appId: string;
+    apiPublicKey: string;
 }
 interface ChipiContextValue {
     config: ChipiSDKConfig;
     chipiSDK: ChipiSDK;
 }
-declare function ChipiProvider({ children, config }: {
+declare function ChipiProvider({ children, config, }: {
     children: React.ReactNode;
     config: ChipiSDKConfig;
 }): react_jsx_runtime.JSX.Element;
 declare function useChipiContext(): ChipiContextValue;
 
 declare function useCreateWallet(): {
-    createWallet: _tanstack_react_query.UseMutateFunction<CreateWalletResponse, Error, string, unknown>;
-    createWalletAsync: _tanstack_react_query.UseMutateAsyncFunction<CreateWalletResponse, Error, string, unknown>;
+    createWallet: _tanstack_react_query.UseMutateFunction<CreateWalletResponse, Error, Omit<CreateWalletParams, "apiPublicKey" | "nodeUrl">, unknown>;
+    createWalletAsync: _tanstack_react_query.UseMutateAsyncFunction<CreateWalletResponse, Error, Omit<CreateWalletParams, "apiPublicKey" | "nodeUrl">, unknown>;
     createWalletResponse: CreateWalletResponse | undefined;
     isLoading: boolean;
     isError: boolean;
 };
 
 declare function useTransfer(): {
-    transfer: _tanstack_react_query.UseMutateFunction<string, Error, TransferParams, unknown>;
-    transferAsync: _tanstack_react_query.UseMutateAsyncFunction<string, Error, TransferParams, unknown>;
+    transfer: _tanstack_react_query.UseMutateFunction<string, Error, Omit<TransferParams, "apiPublicKey">, unknown>;
+    transferAsync: _tanstack_react_query.UseMutateAsyncFunction<string, Error, Omit<TransferParams, "apiPublicKey">, unknown>;
     transferData: string | undefined;
     isLoading: boolean;
     isError: boolean;
 };
 
 declare function useApprove(): {
-    approve: _tanstack_react_query.UseMutateFunction<string, Error, ApproveParams, unknown>;
-    approveAsync: _tanstack_react_query.UseMutateAsyncFunction<string, Error, ApproveParams, unknown>;
+    approve: _tanstack_react_query.UseMutateFunction<string, Error, Omit<ApproveParams, "apiPublicKey">, unknown>;
+    approveAsync: _tanstack_react_query.UseMutateAsyncFunction<string, Error, Omit<ApproveParams, "apiPublicKey">, unknown>;
     approveData: string | undefined;
     isLoading: boolean;
     isError: boolean;
 };
 
-declare function useStake(): {
-    stake: _tanstack_react_query.UseMutateFunction<string, Error, StakeParams, unknown>;
-    stakeAsync: _tanstack_react_query.UseMutateAsyncFunction<string, Error, StakeParams, unknown>;
+declare function useStakeVesuUsdc(): {
+    stake: _tanstack_react_query.UseMutateFunction<string, Error, Omit<StakeParams, "apiPublicKey">, unknown>;
+    stakeAsync: _tanstack_react_query.UseMutateAsyncFunction<string, Error, Omit<StakeParams, "apiPublicKey">, unknown>;
     stakeData: string | undefined;
     isLoading: boolean;
     isError: boolean;
 };
 
 declare function useWithdraw(): {
-    withdraw: _tanstack_react_query.UseMutateFunction<string, Error, WithdrawParams, unknown>;
-    withdrawAsync: _tanstack_react_query.UseMutateAsyncFunction<string, Error, WithdrawParams, unknown>;
+    withdraw: _tanstack_react_query.UseMutateFunction<string, Error, Omit<WithdrawParams, "apiPublicKey">, unknown>;
+    withdrawAsync: _tanstack_react_query.UseMutateAsyncFunction<string, Error, Omit<WithdrawParams, "apiPublicKey">, unknown>;
     withdrawData: string | undefined;
     isLoading: boolean;
     isError: boolean;
 };
 
 declare function useCallAnyContract(): {
-    callAnyContract: _tanstack_react_query.UseMutateFunction<string, Error, CallAnyContractParams, unknown>;
-    callAnyContractAsync: _tanstack_react_query.UseMutateAsyncFunction<string, Error, CallAnyContractParams, unknown>;
+    callAnyContract: _tanstack_react_query.UseMutateFunction<string, Error, Omit<CallAnyContractParams, "apiPublicKey">, unknown>;
+    callAnyContractAsync: _tanstack_react_query.UseMutateAsyncFunction<string, Error, Omit<CallAnyContractParams, "apiPublicKey">, unknown>;
     callAnyContractData: string | undefined;
     isLoading: boolean;
     isError: boolean;
@@ -191,4 +187,4 @@ interface ChipiProviderProps {
     config: ChipiSDKConfig$1;
 }
 
-export { type ApproveParams as A, type CreateWalletParams as C, type ExecuteTransactionParams as E, type IncrementParams as I, type StakeParams as S, type TransferParams as T, type WalletData as W, type CreateWalletResponse as a, ChipiSDK as b, type ChipiSDKConfig$1 as c, type WithdrawParams as d, executePaymasterTransaction as e, type CallAnyContractParams as f, type TransactionParams as g, type SimpleTransactionInput as h, type TransactionInput as i, type TransactionResult as j, ChipiProvider as k, type ChipiProviderProps as l, useCreateWallet as m, useTransfer as n, useApprove as o, useStake as p, useWithdraw as q, useCallAnyContract as r, useChipiContext as u };
+export { type ApproveParams as A, type CreateWalletParams as C, type ExecuteTransactionParams as E, type IncrementParams as I, type StakeParams as S, type TransferParams as T, type WalletData as W, type CreateWalletResponse as a, ChipiSDK as b, type ChipiSDKConfig$1 as c, type WithdrawParams as d, executePaymasterTransaction as e, type CallAnyContractParams as f, type TransactionParams as g, type SimpleTransactionInput as h, type TransactionInput as i, type TransactionResult as j, ChipiProvider as k, type ChipiProviderProps as l, useCreateWallet as m, useTransfer as n, useApprove as o, useStakeVesuUsdc as p, useWithdraw as q, useCallAnyContract as r, useChipiContext as u };

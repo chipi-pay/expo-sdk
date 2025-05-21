@@ -1,52 +1,52 @@
 'use strict';
 
-var chunkIST6N67M_js = require('./chunk-IST6N67M.js');
+var chunkJRG5IN3A_js = require('./chunk-JRG5IN3A.js');
 
 
 
 Object.defineProperty(exports, "ChipiProvider", {
   enumerable: true,
-  get: function () { return chunkIST6N67M_js.ChipiProvider; }
+  get: function () { return chunkJRG5IN3A_js.ChipiProvider; }
 });
 Object.defineProperty(exports, "ChipiSDK", {
   enumerable: true,
-  get: function () { return chunkIST6N67M_js.ChipiSDK; }
+  get: function () { return chunkJRG5IN3A_js.ChipiSDK; }
 });
 Object.defineProperty(exports, "createArgentWallet", {
   enumerable: true,
-  get: function () { return chunkIST6N67M_js.createArgentWallet; }
+  get: function () { return chunkJRG5IN3A_js.createArgentWallet; }
 });
 Object.defineProperty(exports, "executePaymasterTransaction", {
   enumerable: true,
-  get: function () { return chunkIST6N67M_js.executePaymasterTransaction; }
+  get: function () { return chunkJRG5IN3A_js.executePaymasterTransaction; }
 });
 Object.defineProperty(exports, "useApprove", {
   enumerable: true,
-  get: function () { return chunkIST6N67M_js.useApprove; }
+  get: function () { return chunkJRG5IN3A_js.useApprove; }
 });
 Object.defineProperty(exports, "useCallAnyContract", {
   enumerable: true,
-  get: function () { return chunkIST6N67M_js.useCallAnyContract; }
+  get: function () { return chunkJRG5IN3A_js.useCallAnyContract; }
 });
 Object.defineProperty(exports, "useChipiContext", {
   enumerable: true,
-  get: function () { return chunkIST6N67M_js.useChipiContext; }
+  get: function () { return chunkJRG5IN3A_js.useChipiContext; }
 });
 Object.defineProperty(exports, "useCreateWallet", {
   enumerable: true,
-  get: function () { return chunkIST6N67M_js.useCreateWallet; }
+  get: function () { return chunkJRG5IN3A_js.useCreateWallet; }
 });
-Object.defineProperty(exports, "useStake", {
+Object.defineProperty(exports, "useStakeVesuUsdc", {
   enumerable: true,
-  get: function () { return chunkIST6N67M_js.useStake; }
+  get: function () { return chunkJRG5IN3A_js.useStakeVesuUsdc; }
 });
 Object.defineProperty(exports, "useTransfer", {
   enumerable: true,
-  get: function () { return chunkIST6N67M_js.useTransfer; }
+  get: function () { return chunkJRG5IN3A_js.useTransfer; }
 });
 Object.defineProperty(exports, "useWithdraw", {
   enumerable: true,
-  get: function () { return chunkIST6N67M_js.useWithdraw; }
+  get: function () { return chunkJRG5IN3A_js.useWithdraw; }
 });
 //# sourceMappingURL=index.js.map
 //# sourceMappingURL=index.js.map
