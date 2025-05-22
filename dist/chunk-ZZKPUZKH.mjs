@@ -30,7 +30,7 @@ var decryptPrivateKey = (encryptedPrivateKey, password) => {
 };
 
 // src/core/backend-url.ts
-var BACKEND_URL = "http://localhost:3000";
+var BACKEND_URL = "https://chipi-back-production.up.railway.app";
 
 // src/core/send-transaction-with-paymaster.ts
 var executePaymasterTransaction = async (params) => {
@@ -170,14 +170,26 @@ var createArgentWallet = async (params) => {
       })
     });
     const executeTransaction = await executeTransactionResponse.json();
-    return {
-      success: true,
-      txHash: executeTransaction.txHash,
-      wallet: {
-        publicKey: executeTransaction.walletPublicKey,
-        encryptedPrivateKey
-      }
-    };
+    console.log("Execute transaction: ", executeTransaction);
+    if (executeTransaction.success) {
+      return {
+        success: true,
+        txHash: executeTransaction.txHash,
+        wallet: {
+          publicKey: executeTransaction.walletPublicKey,
+          encryptedPrivateKey
+        }
+      };
+    } else {
+      return {
+        success: false,
+        txHash: "",
+        wallet: {
+          publicKey: "",
+          encryptedPrivateKey: ""
+        }
+      };
+    }
   } catch (error) {
     console.error("Error detallado:", error);
     if (error instanceof Error && error.message.includes("SSL")) {
@@ -430,5 +442,5 @@ function useCallAnyContract() {
 }
 
 export { ChipiProvider, ChipiSDK, createArgentWallet, executePaymasterTransaction, useApprove, useCallAnyContract, useChipiContext, useCreateWallet, useStakeVesuUsdc, useTransfer, useWithdraw };
-//# sourceMappingURL=chunk-QXPCTBCQ.mjs.map
-//# sourceMappingURL=chunk-QXPCTBCQ.mjs.map
+//# sourceMappingURL=chunk-ZZKPUZKH.mjs.map
+//# sourceMappingURL=chunk-ZZKPUZKH.mjs.map

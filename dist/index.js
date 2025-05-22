@@ -1,52 +1,52 @@
 'use strict';
 
-var chunkJRG5IN3A_js = require('./chunk-JRG5IN3A.js');
+var chunkRP3T2TOJ_js = require('./chunk-RP3T2TOJ.js');
 
 
 
 Object.defineProperty(exports, "ChipiProvider", {
   enumerable: true,
-  get: function () { return chunkJRG5IN3A_js.ChipiProvider; }
+  get: function () { return chunkRP3T2TOJ_js.ChipiProvider; }
 });
 Object.defineProperty(exports, "ChipiSDK", {
   enumerable: true,
-  get: function () { return chunkJRG5IN3A_js.ChipiSDK; }
+  get: function () { return chunkRP3T2TOJ_js.ChipiSDK; }
 });
 Object.defineProperty(exports, "createArgentWallet", {
   enumerable: true,
-  get: function () { return chunkJRG5IN3A_js.createArgentWallet; }
+  get: function () { return chunkRP3T2TOJ_js.createArgentWallet; }
 });
 Object.defineProperty(exports, "executePaymasterTransaction", {
   enumerable: true,
-  get: function () { return chunkJRG5IN3A_js.executePaymasterTransaction; }
+  get: function () { return chunkRP3T2TOJ_js.executePaymasterTransaction; }
 });
 Object.defineProperty(exports, "useApprove", {
   enumerable: true,
-  get: function () { return chunkJRG5IN3A_js.useApprove; }
+  get: function () { return chunkRP3T2TOJ_js.useApprove; }
 });
 Object.defineProperty(exports, "useCallAnyContract", {
   enumerable: true,
-  get: function () { return chunkJRG5IN3A_js.useCallAnyContract; }
+  get: function () { return chunkRP3T2TOJ_js.useCallAnyContract; }
 });
 Object.defineProperty(exports, "useChipiContext", {
   enumerable: true,
-  get: function () { return chunkJRG5IN3A_js.useChipiContext; }
+  get: function () { return chunkRP3T2TOJ_js.useChipiContext; }
 });
 Object.defineProperty(exports, "useCreateWallet", {
   enumerable: true,
-  get: function () { return chunkJRG5IN3A_js.useCreateWallet; }
+  get: function () { return chunkRP3T2TOJ_js.useCreateWallet; }
 });
 Object.defineProperty(exports, "useStakeVesuUsdc", {
   enumerable: true,
-  get: function () { return chunkJRG5IN3A_js.useStakeVesuUsdc; }
+  get: function () { return chunkRP3T2TOJ_js.useStakeVesuUsdc; }
 });
 Object.defineProperty(exports, "useTransfer", {
   enumerable: true,
-  get: function () { return chunkJRG5IN3A_js.useTransfer; }
+  get: function () { return chunkRP3T2TOJ_js.useTransfer; }
 });
 Object.defineProperty(exports, "useWithdraw", {
   enumerable: true,
-  get: function () { return chunkJRG5IN3A_js.useWithdraw; }
+  get: function () { return chunkRP3T2TOJ_js.useWithdraw; }
 });
 //# sourceMappingURL=index.js.map
 //# sourceMappingURL=index.js.map
