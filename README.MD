@@ -1,6 +1,6 @@
-# Chipi SDK: The Fastest Way to Ship on StarkNet Mainnet
+# Chipi SDK: The Fastest Way to Ship on StarkNet
 
-Chipi SDK combines invisible wallet creation with social login and Avnu’s paymaster to streamline dApp development on StarkNet. Users log in with familiar accounts (Google, X, Meta), and a wallet is generated behind the scenes—no manual key management needed. Focus on building features instead of dealing with blockchain complexities.
+Chipi SDK combines invisible wallet creation with social login and Avnu's paymaster to streamline dApp development on StarkNet. Users log in with familiar accounts (Google, X, Meta), and a wallet is generated behind the scenes—no manual key management needed. Focus on building features instead of dealing with blockchain complexities.
 
 ## Features
 
@@ -19,34 +19,33 @@ https://chipi-sdk-clerk-demo.vercel.app/
 
 https://dashboard.chipipay.com/
 
+### Bring your own Auth Provider
+
+Next, head to https://dashboard.chipipay.com/configure and add your JWKS Endpoint from your Auth Provider. 
+
+We will use this to verify the Bearer Tokens from your Auth Provider used in your frontend.
+
+After adding the JWKS Endpoint, you will get a Public Key (pk_prod_xxxx). You will need this to initialize the SDK.
+
+### Install the SDK
+
 ```bash
 npm install @chipi-pay/chipi-sdk
-
-# Add your API keys to the environment variables
-NEXT_PUBLIC_CHIPI_PUBLIC_KEY=your_public_key
-NEXT_PUBLIC_CHIPI_APP_ID=your_app_id
-CHIPI_SECRET_KEY=your_secret_key
 ```
 
 ## Getting Started
 
 ```typescript
 // app/providers.tsx
+"use client";
 
-// Initialize SDK
 import { ChipiProvider } from "@chipi-pay/chipi-sdk";
-
-const CHIPI_PUBLIC_KEY = process.env.NEXT_PUBLIC_CHIPI_PUBLIC_KEY!;
-
-if (!CHIPI_PUBLIC_KEY) {
-  throw new Error("Some Key is not set");
-}
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ChipiProvider
       config={{
-        apiPublicKey: "CHIPI_PUBLIC_KEY",
+        apiPublicKey: "pk_prod_5fc889d9527c24b9657b9c28399e91d4",
       }}
     >
       {children}
