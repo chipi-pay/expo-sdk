@@ -1,3 +1,3 @@
-export { ChipiProvider, useApprove, useCallAnyContract, useChipiContext, useCreateWallet, useStake, useTransfer, useWithdraw } from '../chunk-HKU5RVDN.mjs';
+export { ChipiProvider, useApprove, useCallAnyContract, useChipiContext, useCreateWallet, useStakeVesuUsdc, useTransfer, useWithdraw } from '../chunk-QXPCTBCQ.mjs';
 //# sourceMappingURL=index.mjs.map
 //# sourceMappingURL=index.mjs.map

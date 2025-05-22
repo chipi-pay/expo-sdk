@@ -13,19 +13,24 @@ import type {
   TransferParams,
   WithdrawParams,
 } from "./types";
-import { createArgentWallet } from "./create-wallet";
+import { createArgentWallet } from "./create-argent-wallet";
 import { CreateWalletResponse } from "./types";
 
 export class ChipiSDK {
-  private apiKey: string;
-  private secretKey: string;
-  private appId: string;
+  private apiPublicKey: string;
   private readonly nodeUrl = "https://starknet-mainnet.public.blastapi.io/rpc/v0_7";
 
   constructor(config: ChipiSDKConfig) {
-    this.apiKey = config.apiKey;
-    this.secretKey = config.secretKey;
-    this.appId = config.appId;
+    this.apiPublicKey = config.apiPublicKey;
+    
+    // Bind all methods to preserve this context
+    this.executeTransaction = this.executeTransaction.bind(this);
+    this.transfer = this.transfer.bind(this);
+    this.approve = this.approve.bind(this);
+    this.stakeVesuUsdc = this.stakeVesuUsdc.bind(this);
+    this.withdraw = this.withdraw.bind(this);
+    this.callAnyContract = this.callAnyContract.bind(this);
+    this.createWallet = this.createWallet.bind(this);
   }
 
   private formatAmount(amount: string | number, decimals: number = 18): Uint256 {
@@ -37,97 +42,119 @@ export class ChipiSDK {
     return cairo.uint256(amountBN);
   }
 
-  async executeTransaction(input: Omit<ExecuteTransactionParams, 'apiKey' | 'secretKey' | 'appId'>): Promise<string> {
+  async executeTransaction(input: Omit<ExecuteTransactionParams, 'apiPublicKey'>): Promise<string> {
     return executePaymasterTransaction({
       ...input,
-      apiKey: this.apiKey,
-      secretKey: this.secretKey,
-      appId: this.appId,
+      apiPublicKey: this.apiPublicKey,
     });
   }
 
-  async transfer(params: Omit<TransferParams, 'apiKey' | 'secretKey' | 'appId'>): Promise<string> {
+  async transfer(params: Omit<TransferParams, 'apiPublicKey'>): Promise<string> {
+    const { encryptKey, wallet, contractAddress, recipient, amount, decimals, bearerToken } = params;
+    console.log("transfer this format test",this.formatAmount(amount, decimals));
     return this.executeTransaction({
-      encryptKey: params.encryptKey,
-      wallet: params.wallet,
+      encryptKey,
+      wallet,
+      bearerToken,
       calls: [
         {
-          contractAddress: params.contractAddress,
+          contractAddress,
           entrypoint: "transfer",
           calldata: [
-            params.recipient,
-            this.formatAmount(params.amount, params.decimals),
+            recipient,
+            this.formatAmount(amount, decimals),
+            "0x0",
           ],
         },
       ],
     });
   }
 
-  async approve(params: Omit<ApproveParams, 'apiKey' | 'secretKey' | 'appId'>): Promise<string> {
+  async approve(params: Omit<ApproveParams, 'apiPublicKey'>): Promise<string> {
+    const { encryptKey, wallet, contractAddress, spender, amount, decimals, bearerToken } = params;
     return this.executeTransaction({
-      encryptKey: params.encryptKey,
-      wallet: params.wallet,
+      encryptKey,
+      wallet,
+      bearerToken,
       calls: [
         {
-          contractAddress: params.contractAddress,
+          contractAddress,
           entrypoint: "approve",
           calldata: [
-            params.spender,
-            this.formatAmount(params.amount, params.decimals),
+            spender,
+            this.formatAmount(amount, decimals),
+            "0x0",
           ],
         },
       ],
     });
   }
 
-  async stake(params: Omit<StakeParams, 'apiKey' | 'secretKey' | 'appId'>): Promise<string> {
+  async stakeVesuUsdc(params: Omit<StakeParams, 'apiPublicKey'>): Promise<string> {
+    const { encryptKey, wallet, amount, receiverWallet, bearerToken } = params;
     return this.executeTransaction({
-      encryptKey: params.encryptKey,
-      wallet: params.wallet,
+      encryptKey,
+      wallet,
+      bearerToken,
       calls: [
         {
-          contractAddress: params.contractAddress,
+          contractAddress:"0x053c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8",
+          entrypoint: "approve",
+          calldata: [
+            "0x017f19582c61479f2fe0b6606300e975c0a8f439102f43eeecc1d0e9b3d84350",
+            this.formatAmount(amount, 6),
+            "0x0",
+          ],
+        },
+        {
+          contractAddress:"0x017f19582c61479f2fe0b6606300e975c0a8f439102f43eeecc1d0e9b3d84350",
           entrypoint: "deposit",
           calldata: [
-            this.formatAmount(params.amount, params.decimals),
-            params.recipient,
+            this.formatAmount(amount, 6),
+            "0x0",
+            receiverWallet,
           ],
         },
       ],
     });
   }
 
-  async withdraw(params: Omit<WithdrawParams, 'apiKey' | 'secretKey' | 'appId'>): Promise<string> {
+  async withdraw(params: Omit<WithdrawParams, 'apiPublicKey'>): Promise<string> {
+    const { encryptKey, wallet, contractAddress, amount, recipient, decimals, bearerToken } = params;
     return this.executeTransaction({
-      encryptKey: params.encryptKey,
-      wallet: params.wallet,
+      encryptKey,
+      wallet,
+      bearerToken,
       calls: [
         {
-          contractAddress: params.contractAddress,
+          contractAddress,
           entrypoint: "withdraw",
           calldata: [
-            this.formatAmount(params.amount, params.decimals),
-            params.recipient,
+            this.formatAmount(amount, decimals),
+            recipient,
+            "0x0",
           ],
         },
       ],
     });
   }
 
-  async callAnyContract(params: Omit<CallAnyContractParams, 'apiKey' | 'secretKey' | 'appId'>): Promise<string> {
+  async callAnyContract(params: Omit<CallAnyContractParams, 'apiPublicKey'>): Promise<string> {
+    const { encryptKey, wallet, contractAddress, calls, bearerToken } = params;
     return this.executeTransaction({
-      encryptKey: params.encryptKey,
-      wallet: params.wallet,
-      calls: params.calls,
+      encryptKey,
+      wallet,
+      bearerToken,
+      calls,
     });
   }
 
-  async createWallet(encryptKey: string): Promise<CreateWalletResponse> {
+  async createWallet(params: Omit<CreateWalletParams, 'apiPublicKey' | 'nodeUrl'>): Promise<CreateWalletResponse> {
+    const { encryptKey, bearerToken } = params;
     return createArgentWallet({
       encryptKey: encryptKey,
-      apiKey: this.apiKey,
-      secretKey: this.secretKey,
-      appId: this.appId,
+      apiPublicKey: this.apiPublicKey,
+      bearerToken,
       nodeUrl: this.nodeUrl,
     });
   }

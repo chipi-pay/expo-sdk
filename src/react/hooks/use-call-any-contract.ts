@@ -2,12 +2,15 @@ import { useMutation } from "@tanstack/react-query";
 import { useChipiContext } from "../context";
 import { CallAnyContractParams } from "../../core";
 
-
 export function useCallAnyContract() {
   const { chipiSDK } = useChipiContext();
 
-  const mutation = useMutation({
-    mutationFn: (params: CallAnyContractParams) => chipiSDK.callAnyContract(params),
+  const mutation = useMutation<
+    string,
+    Error,
+    Omit<CallAnyContractParams, "apiPublicKey">
+  >({
+    mutationFn: chipiSDK.callAnyContract,
   });
 
   return {

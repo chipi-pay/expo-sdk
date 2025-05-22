@@ -1,11 +1,9 @@
-import { createContext, useContext } from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ChipiSDK } from '../../core/chipi-sdk';
+import { createContext, useContext, useMemo } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ChipiSDK } from "../../core/chipi-sdk";
 
 export interface ChipiSDKConfig {
-  apiKey: string;
-  secretKey: string;
-  appId: string;
+  apiPublicKey: string;
 }
 
 interface ChipiContextValue {
@@ -16,36 +14,42 @@ interface ChipiContextValue {
 const ChipiContext = createContext<ChipiContextValue | null>(null);
 const queryClient = new QueryClient();
 
-export function ChipiProvider({ 
-  children, 
-  config 
-}: { 
+export function ChipiProvider({
+  children,
+  config,
+}: {
   children: React.ReactNode;
   config: ChipiSDKConfig;
 }) {
-  if (!config.apiKey || !config.secretKey || !config.appId) {
-    throw new Error('Chipi SDK apiKey, secretKey and appId are required');
+  if (!config.apiPublicKey) {
+    throw new Error("Chipi SDK apiPublicKey is required");
   }
 
-  const chipiSDK = new ChipiSDK({
-    apiKey: config.apiKey,
-    secretKey: config.secretKey,
-    appId: config.appId,
-  });
+  const chipiSDK = useMemo(() => {
+    console.log("Creating new ChipiSDK instance with apiPublicKey:", config.apiPublicKey);
+    return new ChipiSDK({
+      apiPublicKey: config.apiPublicKey,
+    });
+  }, [config.apiPublicKey]);
+
+  const contextValue = useMemo(() => ({
+    config,
+    chipiSDK,
+  }), [config, chipiSDK]);
 
   return (
-    <ChipiContext.Provider value={{ config, chipiSDK }}>
-      <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <ChipiContext.Provider value={contextValue}>
         {children}
-      </QueryClientProvider>
-    </ChipiContext.Provider>
+      </ChipiContext.Provider>
+    </QueryClientProvider>
   );
 }
 
 export function useChipiContext() {
   const context = useContext(ChipiContext);
   if (!context) {
-    throw new Error('useChipiContext must be used within a ChipiProvider');
+    throw new Error("useChipiContext must be used within a ChipiProvider");
   }
   return context;
 }

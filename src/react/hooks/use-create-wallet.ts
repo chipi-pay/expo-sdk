@@ -1,28 +1,13 @@
 import { useMutation } from "@tanstack/react-query";
 import { useChipiContext } from "../context";
-import { CreateWalletResponse } from "../../core";
+import {  CreateWalletParams, CreateWalletResponse } from "../../core";
+
 
 export function useCreateWallet() {
   const { chipiSDK } = useChipiContext();
 
-  const mutation = useMutation<CreateWalletResponse, Error, string>({
-    mutationFn: async (encryptKey: string) => {
-      const response = await chipiSDK.createWallet(encryptKey);
-      
-      // Asegurarnos de que la respuesta tenga la estructura correcta
-      if (!response || !response.wallet) {
-        throw new Error("Invalid response from SDK");
-      }
-
-      return {
-        success: response.success,
-        txHash: response.txHash,
-        wallet: {
-          publicKey: typeof response.wallet === 'string' ? response.wallet : response.wallet.publicKey,
-          encryptedPrivateKey: response.wallet.encryptedPrivateKey
-        }
-      };
-    },
+  const mutation = useMutation<CreateWalletResponse, Error, Omit<CreateWalletParams, 'apiPublicKey' | 'nodeUrl'>>({
+    mutationFn: chipiSDK.createWallet,
   });
 
   return {

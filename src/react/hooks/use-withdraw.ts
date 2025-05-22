@@ -8,8 +8,8 @@ import { WithdrawParams } from "../../core";
 export function useWithdraw() {
   const { chipiSDK } = useChipiContext();
 
-  const mutation = useMutation({
-    mutationFn: (params: WithdrawParams) => chipiSDK.withdraw(params),
+  const mutation = useMutation<string, Error, Omit<WithdrawParams, 'apiPublicKey'>>({
+    mutationFn: chipiSDK.withdraw,
   });
 
   return {
