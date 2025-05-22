@@ -1,6 +1,6 @@
 {
   "name": "@chipi-pay/chipi-sdk",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "SDK para crear wallets y enviar transacciones usando el paymaster de AVNU",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
