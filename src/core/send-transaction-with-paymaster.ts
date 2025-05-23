@@ -18,7 +18,7 @@ export const executePaymasterTransaction = async (
 ): Promise<string> => {
   try {
     const { encryptKey, wallet, calls, apiPublicKey, bearerToken } = params;
-    console.log("Params: ", params);
+
     // Fetch the encrypted private key from clerk public metadata
     const privateKeyDecrypted = decryptPrivateKey(
       wallet.encryptedPrivateKey,
@@ -40,7 +40,6 @@ export const executePaymasterTransaction = async (
     );
 
     // Build the type data
-    // TODO: Call to the API to get the type data
     const typeDataResponse = await fetch(`${BACKEND_URL}/transactions/prepare-typed-data`, {
       method: "POST",
       headers: {
@@ -61,7 +60,6 @@ export const executePaymasterTransaction = async (
     }
 
     const typeData = await typeDataResponse.json();
-    // console.log('Type data recibido:', typeData.Calls);
 
     // Sign the message
     const userSignature = await account.signMessage(typeData);
