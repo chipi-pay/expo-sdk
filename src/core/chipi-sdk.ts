@@ -33,13 +33,21 @@ export class ChipiSDK {
     this.createWallet = this.createWallet.bind(this);
   }
 
-  private formatAmount(amount: string | number, decimals: number = 18): Uint256 {
+  private formatAmount(amount: string | number, decimals: number = 18): string {
     const amountStr = amount.toString();
+    // Si es un número entero, multiplicar por 10^decimals
+    if (!amountStr.includes('.')) {
+      const amountBN = BigInt(amountStr) * BigInt(10) ** BigInt(decimals);
+      console.log('Formatted integer amount:', amountBN.toString());
+      return amountBN.toString();
+    }
+
+    // Si tiene decimales, manejamos como antes
     const [integerPart, decimalPart = ''] = amountStr.split('.');
     const paddedDecimal = decimalPart.padEnd(decimals, '0').slice(0, decimals);
     const amountBN = BigInt(integerPart + paddedDecimal);
-
-    return cairo.uint256(amountBN);
+    
+    return amountBN.toString();
   }
 
   async executeTransaction(input: Omit<ExecuteTransactionParams, 'apiPublicKey'>): Promise<string> {
@@ -51,7 +59,8 @@ export class ChipiSDK {
 
   async transfer(params: Omit<TransferParams, 'apiPublicKey'>): Promise<string> {
     const { encryptKey, wallet, contractAddress, recipient, amount, decimals, bearerToken } = params;
-    console.log("transfer this format test",this.formatAmount(amount, decimals));
+    const formattedAmount = this.formatAmount(amount, decimals);
+    
     return this.executeTransaction({
       encryptKey,
       wallet,
@@ -62,7 +71,7 @@ export class ChipiSDK {
           entrypoint: "transfer",
           calldata: [
             recipient,
-            this.formatAmount(amount, decimals),
+            formattedAmount,
             "0x0",
           ],
         },
@@ -92,6 +101,8 @@ export class ChipiSDK {
 
   async stakeVesuUsdc(params: Omit<StakeParams, 'apiPublicKey'>): Promise<string> {
     const { encryptKey, wallet, amount, receiverWallet, bearerToken } = params;
+    const formattedAmount = this.formatAmount(amount, 6);
+    
     return this.executeTransaction({
       encryptKey,
       wallet,
@@ -102,7 +113,7 @@ export class ChipiSDK {
           entrypoint: "approve",
           calldata: [
             "0x017f19582c61479f2fe0b6606300e975c0a8f439102f43eeecc1d0e9b3d84350",
-            this.formatAmount(amount, 6),
+            formattedAmount,
             "0x0",
           ],
         },
@@ -110,7 +121,7 @@ export class ChipiSDK {
           contractAddress:"0x017f19582c61479f2fe0b6606300e975c0a8f439102f43eeecc1d0e9b3d84350",
           entrypoint: "deposit",
           calldata: [
-            this.formatAmount(amount, 6),
+            formattedAmount,
             "0x0",
             receiverWallet,
           ],
@@ -121,6 +132,8 @@ export class ChipiSDK {
 
   async withdraw(params: Omit<WithdrawParams, 'apiPublicKey'>): Promise<string> {
     const { encryptKey, wallet, contractAddress, amount, recipient, decimals, bearerToken } = params;
+    const formattedAmount = this.formatAmount(amount, decimals);
+    
     return this.executeTransaction({
       encryptKey,
       wallet,
@@ -130,7 +143,7 @@ export class ChipiSDK {
           contractAddress,
           entrypoint: "withdraw",
           calldata: [
-            this.formatAmount(amount, decimals),
+            formattedAmount,
             recipient,
             "0x0",
           ],
