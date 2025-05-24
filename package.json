@@ -1,7 +1,7 @@
 {
-  "name": "@chipi-pay/chipi-sdk",
-  "version": "3.0.5",
-  "description": "SDK para crear wallets y enviar transacciones usando el paymaster de AVNU",
+  "name": "@chipi-pay/chipi-expo",
+  "version": "0.0.21",
+  "description": "Expo version of Chipi SDK for creating wallets and sending transactions using AVNU's paymaster",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -28,29 +28,26 @@
   },
   "peerDependencies": {
     "@tanstack/react-query": ">=4.0.0",
-    "react": ">=16.8.0",
+    "expo": ">=50.0.0",
+    "react": ">=19.0.0",
     "starknet": ">=6.23.1"
-  },
-  "devDependencies": {
-    "@types/crypto-js": "^4.2.2",
-    "@types/node": "^22.15.15",
-    "@types/react": "^18.2.0",
-    "react": "^18.2.0",
-    "tsup": "^8.3.6",
-    "typescript": "^5.7.3"
   },
   "dependencies": {
     "@avnu/gasless-sdk": "^0.1.6",
-    "@clerk/express": "^1.5.0",
     "crypto-js": "^4.2.0",
+    "expo-crypto": "~14.1.0",
     "starknet": ">=6.23.1"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/chipi-pay/chipi-sdk"
+    "url": "https://github.com/chipi-pay/expo-sdk"
   },
   "bugs": {
     "url": "https://github.com/chipi-pay/chipi-sdk/issues"
   },
-  "homepage": "https://github.com/chipi-pay/chipi-sdk#readme"
+  "homepage": "https://github.com/chipi-pay/chipi-sdk#readme",
+  "devDependencies": {
+    "tsup": "^8.5.0",
+    "typescript": "^5.7.3"
+  }
 }

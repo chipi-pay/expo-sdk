@@ -14,6 +14,7 @@ import {
 import { encryptPrivateKey } from "./lib/encryption";
 import { CreateWalletParams, CreateWalletResponse, WalletData } from "./types";
 import { BACKEND_URL } from "./backend-url";
+import { getPrivateKeyAX } from "./get-private-key-ax";
 
 
 export const createArgentWallet = async (
@@ -26,7 +27,7 @@ export const createArgentWallet = async (
    
     const provider = new RpcProvider({ nodeUrl: nodeUrl });
     // Generating the private key with Stark Curve
-    const privateKeyAX = stark.randomAddress();
+    const privateKeyAX = getPrivateKeyAX();
     const starkKeyPubAX = ec.starkCurve.getStarkKey(privateKeyAX);
 
     // Using Argent X Account v0.4.0 class hash
