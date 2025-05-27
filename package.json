@@ -1,6 +1,6 @@
 {
   "name": "@chipi-pay/chipi-expo",
-  "version": "0.0.28",
+  "version": "0.0.29",
   "description": "Expo version of Chipi SDK for creating wallets and sending transactions using AVNU's paymaster",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
