@@ -9,9 +9,9 @@ Chipi SDK combines invisible wallet creation with social login and Avnu's paymas
 - 🔄 **Simple Transfers**: Simplified API for token transfers
 - ⚡ **Optimized for StarkNet**: Designed specifically for the StarkNet network
 
-## Live Demo
+## Example Repo
 
-https://chipi-sdk-clerk-demo.vercel.app/
+https://github.com/chipi-pay/chipi-expo-sdk-example
 
 ## Installation
 
@@ -30,68 +30,39 @@ After adding the JWKS Endpoint, you will get a Public Key (pk_prod_xxxx). You wi
 ### Install the SDK
 
 ```bash
-npm install @chipi-pay/chipi-sdk
+npm install @chipi-pay/chipi-expo
 ```
 
 ## Getting Started
 
 ```typescript
-// app/providers.tsx
-"use client";
+// app/_layout.tsx
 
-import { ChipiProvider } from "@chipi-pay/chipi-sdk";
+export default function RootLayout() {
+  const [loaded] = useFonts({
+    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
+  });
 
-export function Providers({ children }: { children: React.ReactNode }) {
-  return (
-    <ChipiProvider
-      config={{
-        apiPublicKey: "pk_prod_5fc889d9527c24b9657b9c28399e91d4",
-      }}
-    >
-      {children}
-    </ChipiProvider>
-  );
-}
-```
-
-```typescript
-// app/page.tsx
-import {
-  useApprove,
-  useStake,
-  useCreateWallet,
-  useTransfer,
-  useWithdraw,
-  useCallAnyContract,
-} from "@chipi-pay/chipi-sdk";
-
-export default function Home() {
-  const { createWalletAsync, createWalletResponse } =
-    useCreateWallet();
-  const { transferAsync } = useTransfer();
-
-
-  const handleCreateWallet = async (encryptKey: string) => { // PIN 01234
-    const response = await createWalletAsync(encryptKey);
-    console.log("creation response", response);
-    alert("Wallet created");
-  };
-
-  const handleTransfer = async (params: TransferParams) => {
-    const response = await transferAsync(params);
-    console.log("transfer response", response);
-    alert("Transferred");
-  };
+  if (!loaded) {
+    // Async font loading only occurs in development.
+    return null;
+  }
 
   return (
-    <div>
-      <h1>Chipi SDK</h1>
-      <button onClick={handleCreateWallet}>Create Wallet</button>
-      <button onClick={handleTransfer}>Transfer</button>
-    </div>
+    <ClerkProvider tokenCache={tokenCache}>
+      <ChipiProvider
+        config={{
+          apiPublicKey: "pk_prod_7ba19d352226d43ac92a4a8132a5917c",
+        }}
+      >
+        <Slot />
+      </ChipiProvider>
+    </ClerkProvider>
   );
 }
+
 ```
+
 
 ## API
 
