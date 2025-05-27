@@ -63,9 +63,6 @@ export const executePaymasterTransaction = async (
 
     // Sign the message
     const userSignature = await account.signMessage(typeData);
-    //console.log("User signature: ", userSignature);
-
-
    
     // Execute the transaction
     const executeTransaction = await fetch(`${BACKEND_URL}/transactions/execute-sponsored-transaction`, {
@@ -92,8 +89,6 @@ export const executePaymasterTransaction = async (
     }
 
     const result = await executeTransaction.json();
-    // console.log('Resultado de la transacción:', result);
-    
     if (!result.transactionHash) {
       throw new Error('La respuesta no contiene el hash de la transacción');
     }

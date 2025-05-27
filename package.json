@@ -1,6 +1,6 @@
 {
   "name": "@chipi-pay/chipi-expo",
-  "version": "0.0.21",
+  "version": "0.0.28",
   "description": "Expo version of Chipi SDK for creating wallets and sending transactions using AVNU's paymaster",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -34,6 +34,7 @@
   },
   "dependencies": {
     "@avnu/gasless-sdk": "^0.1.6",
+    "crypto-es": "^2.1.0",
     "crypto-js": "^4.2.0",
     "expo-crypto": "~14.1.0",
     "starknet": ">=6.23.1"

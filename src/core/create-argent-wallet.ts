@@ -20,14 +20,13 @@ import { getPrivateKeyAX } from "./get-private-key-ax";
 export const createArgentWallet = async (
    params: CreateWalletParams
 ): Promise<CreateWalletResponse> => {
-
-  // console.log("create wallet Params: ", params);
   try {
     const { encryptKey, apiPublicKey, bearerToken, nodeUrl } = params;
    
     const provider = new RpcProvider({ nodeUrl: nodeUrl });
     // Generating the private key with Stark Curve
     const privateKeyAX = getPrivateKeyAX();
+    // const privateKeyAX = stark.randomAddress();
     const starkKeyPubAX = ec.starkCurve.getStarkKey(privateKeyAX);
 
     // Using Argent X Account v0.4.0 class hash
@@ -51,14 +50,9 @@ export const createArgentWallet = async (
       AXConstructorCallData,
       0
     );
-    // console.log("Contract address: ", contractAddress);
-   
     // Initiating Account
     const account = new Account(provider, publicKey, privateKeyAX);
-    // console.log("Account ", { ...account });
-
     // Backend Call API to create the wallet
-    console.log("apiPublicKey", apiPublicKey);
     const typeDataResponse = await fetch(`${BACKEND_URL}/chipi-wallets/prepare-creation`, {
       method: "POST",
       headers: {
@@ -71,22 +65,17 @@ export const createArgentWallet = async (
       }),
     });
     const { typeData, accountClassHash: accountClassHashResponse } = await typeDataResponse.json();
-
-    // console.log("Type data: ", typeData);
     // Sign the message
     const userSignature = await account.signMessage(typeData);
 
-    // console.log("User signature: ", userSignature);
+
     const deploymentData: DeploymentData = {
       class_hash: accountClassHashResponse,
       salt: starkKeyPubAX,
       unique: `${num.toHex(0)}`,
       calldata: AXConstructorCallData.map((value) => num.toHex(value)),
     };
-
-    // console.log("Deployment data: ------ ", deploymentData);
     const encryptedPrivateKey = encryptPrivateKey(privateKeyAX, encryptKey);
-    // console.log("Encrypted private key: ", encryptedPrivateKey);
 
     // Llamar a la API para guardar la wallet en dashboard
     const executeTransactionResponse = await fetch(`${BACKEND_URL}/chipi-wallets`, {
@@ -114,7 +103,6 @@ export const createArgentWallet = async (
       }),
     });
     const executeTransaction = await executeTransactionResponse.json();
-    console.log("Execute transaction: ", executeTransaction);
 
     if (executeTransaction.success) {
     return {
@@ -151,3 +139,4 @@ export const createArgentWallet = async (
     );
   }
 };
+

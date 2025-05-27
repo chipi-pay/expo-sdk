@@ -11,5 +11,13 @@ export const getPrivateKeyAX = () => {
     .join('');
     
   // Add '0x' prefix
-  return `0x${privateKey}`;
+  const fullPrivateKey = `0x${privateKey}`;
+
+  // Ensure the private key is within Starknet's valid range (0 to 2^251 - 1)
+  // Convert to BigInt and take modulo 2^251
+  const maxStarknetValue = BigInt('0x800000000000000000000000000000000000000000000000000000000000000');
+  const privateKeyBigInt = BigInt(fullPrivateKey) % maxStarknetValue;
+  
+  // Convert back to hex string with '0x' prefix
+  return `0x${privateKeyBigInt.toString(16)}`;
 };

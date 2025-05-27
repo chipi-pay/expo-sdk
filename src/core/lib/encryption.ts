@@ -1,4 +1,4 @@
-import CryptoJS from "crypto-js";
+import CryptoES from 'crypto-es';
 
 export const encryptPrivateKey = (
   privateKey: string,
@@ -8,7 +8,7 @@ export const encryptPrivateKey = (
     throw new Error("Private key and password are required");
   }
 
-  return CryptoJS.AES.encrypt(privateKey, password).toString();
+  return CryptoES.AES.encrypt(privateKey, password).toString();
 };
 
 export const decryptPrivateKey = (
@@ -21,8 +21,8 @@ export const decryptPrivateKey = (
   }
 
   try {
-    const bytes = CryptoJS.AES.decrypt(encryptedPrivateKey, password);
-    const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+    const bytes = CryptoES.AES.decrypt(encryptedPrivateKey, password);
+    const decrypted = bytes.toString(CryptoES.enc.Utf8);
 
     // Check if the decrypted string is empty
     if (!decrypted) {
