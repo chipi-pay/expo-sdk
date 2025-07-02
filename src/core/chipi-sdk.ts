@@ -8,10 +8,10 @@ import type {
   CallAnyContractParams,
   ChipiSDKConfig,
   CreateWalletParams,
-  StakeParams,
+  StakeVesuUsdcParams,
   TransactionResult,
   TransferParams,
-  WithdrawParams,
+  WithdrawVesuUsdcParams,
 } from "./types";
 import { createArgentWallet } from "./create-argent-wallet";
 import { CreateWalletResponse } from "./types";
@@ -28,7 +28,7 @@ export class ChipiSDK {
     this.transfer = this.transfer.bind(this);
     this.approve = this.approve.bind(this);
     this.stakeVesuUsdc = this.stakeVesuUsdc.bind(this);
-    this.withdraw = this.withdraw.bind(this);
+    this.withdrawVesuUsdc = this.withdrawVesuUsdc.bind(this);
     this.callAnyContract = this.callAnyContract.bind(this);
     this.createWallet = this.createWallet.bind(this);
   }
@@ -99,7 +99,7 @@ export class ChipiSDK {
     });
   }
 
-  async stakeVesuUsdc(params: Omit<StakeParams, 'apiPublicKey'>): Promise<string> {
+  async stakeVesuUsdc(params: Omit<StakeVesuUsdcParams, 'apiPublicKey'>): Promise<string> {
     const { encryptKey, wallet, amount, receiverWallet, bearerToken } = params;
     const formattedAmount = this.formatAmount(amount, 6);
     
@@ -130,9 +130,9 @@ export class ChipiSDK {
     });
   }
 
-  async withdraw(params: Omit<WithdrawParams, 'apiPublicKey'>): Promise<string> {
-    const { encryptKey, wallet, contractAddress, amount, recipient, decimals, bearerToken } = params;
-    const formattedAmount = this.formatAmount(amount, decimals);
+  async withdrawVesuUsdc(params: Omit<WithdrawVesuUsdcParams, 'apiPublicKey'>): Promise<string> {
+    const { encryptKey, wallet, amount, recipient, bearerToken } = params;
+    const formattedAmount = this.formatAmount(amount, 6);
     
     return this.executeTransaction({
       encryptKey,
@@ -140,7 +140,7 @@ export class ChipiSDK {
       bearerToken,
       calls: [
         {
-          contractAddress,
+          contractAddress:"0x017f19582c61479f2fe0b6606300e975c0a8f439102f43eeecc1d0e9b3d84350",
           entrypoint: "withdraw",
           calldata: [
             formattedAmount,

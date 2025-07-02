@@ -28,7 +28,7 @@ export interface ApproveParams {
   bearerToken: string;
 }
 
-export interface StakeParams {
+export interface StakeVesuUsdcParams {
   encryptKey: string;
   wallet: WalletData;
   amount: string | number;
@@ -36,16 +36,13 @@ export interface StakeParams {
   bearerToken: string;
 }
 
-export interface WithdrawParams {
+export interface WithdrawVesuUsdcParams {
   encryptKey: string;
   wallet: WalletData;
   recipient: string;
-  contractAddress: string;
   amount: string | number;
-  decimals?: number;
   bearerToken: string;
 }
-
 export interface CallAnyContractParams {
   encryptKey: string;
   wallet: WalletData;
